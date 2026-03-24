@@ -25,14 +25,32 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const defaultTheme = createTheme();
 
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth();
+
+const set = (email: string, password: string) => createUserWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed up 
+    const user = userCredential.user;
+    return user
+    // ...
+  })
+
 export default function SignUp() {
+
+  const [email, setEmail] = React.useState<string>
+  const [password, setPassword] = React.useState<string>
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    // console.log({
+    //   email: data.get('email'),
+    //   password: data.get('password'),
+    // });
+    set(email, password);
+
   };
 
   return (
@@ -106,6 +124,10 @@ export default function SignUp() {
             >
               Sign Up
             </Button>
+
+
+
+
             <Grid container justifyContent="flex-end">
               <Grid >
                 <Link href="#" variant="body2">

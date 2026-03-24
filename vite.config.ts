@@ -10,5 +10,5 @@ export default defineConfig({
     }),
     react(),
   ],
-  envDir: './src/environments',
+  envDir: './environments',
 });

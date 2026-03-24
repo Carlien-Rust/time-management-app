@@ -1,7 +1,7 @@
 // ./src/styles/ThemeProvider.tsx
 
 import {CssBaseline, ThemeProvider} from "@mui/material";
-import React, {ReactNode} from "react";
+import React, {type ReactNode} from "react";
 import theme from "./createTheme";
 
 interface IThemeProviderWrapper {

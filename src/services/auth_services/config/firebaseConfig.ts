@@ -1,7 +1,7 @@
 /*
 Initialise firebase auth and app
 Get reference to services
-Called by AuthProvider
+Called by AuthProvider 
 */
 
 import { type FirebaseOptions, initializeApp } from "firebase/app";
