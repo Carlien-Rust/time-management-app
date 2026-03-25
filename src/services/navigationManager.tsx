@@ -1,4 +1,4 @@
-// Managers for navigation in the app
+// Managers for navigation in the app 
 
 import { useNavigate } from "@tanstack/react-router";
 
@@ -17,7 +17,9 @@ export function useNavigationManager() {
 
     //Sidebar - Projects
     const handleClickProject = (id: string) => {
-        navigate({ to: `/project/${id}` });
+        navigate({ to: "/project/$id",
+            params: { id }
+        });
     };
 
     // Register
@@ -27,12 +29,16 @@ export function useNavigationManager() {
 
     //Project card - Edit projects
     const handleEditProject = (id: string) => {
-        navigate({ to: `/project/${id}/edit-project` });
+        navigate({ to: "/project/$id/edit-project",
+            params: { id } 
+        });
     };
 
     //Project card - Logging time
     const handleTimeEntry = (id: string) => {
-        navigate({ to: `/project/${id}/add-time` });
+        navigate({ to: "/project/$id/add-time",
+            params: { id }
+        });
     };
 
    // Profile
@@ -44,13 +50,6 @@ export function useNavigationManager() {
     const handleReset = () => {
         navigate({ to: "/reset" });
     };
-
-    /* Can we re-use reset for forget password?
-    // Forget password
-    export const handleForget = () => {
-        navigate({ to: "/forget" });
-    };
-    */
 
     // Logout/Login Page
     const handleLogout = () => {
@@ -64,7 +63,6 @@ export function useNavigationManager() {
     handleEditProject,
     handleTimeEntry,
     handleRegister,
-    //handleForget,
     handleProfile,
     handleReset,
     handleLogout,

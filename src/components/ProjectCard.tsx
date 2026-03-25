@@ -17,31 +17,60 @@ Render Project card with the project info:
 - Edit and Time log buttons that link to modals 
 
 */
-import { Card, CardActions, CardContent, CardMedia, Button, Typography } from '@mui/material';
+import { Container, CardActions, Button, Box, Typography } from '@mui/material';
+import { useParams } from "@tanstack/react-router";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
+import { useGetProjectsById } from "../hooks/useGetIds";
 
 export default function ProjectCard() {
 
-    // Hook for fetching project info based on id
-    //const id = 1;
+    const defaultTheme = createTheme();
+
+    // Hook for fetching project info based on id 
+    const params = useParams({ strict: false });
+    const id = params?.id;
+    const { data: projectEntry, isLoading, isError, refetch } = useGetProjectsById(id); 
 
     const { handleEditProject, handleTimeEntry } = useNavigationManager();
 
+    const handleRefresh = () => {
+        refetch(); 
+        console.log("Refreshing encryption servers...");
+    };
+
+    if (id && isLoading) return <Typography>Loading Project Data...</Typography>;
+    if (id && isError) {
+        return (
+        <Box>
+            <Typography>Error loading user data.</Typography>
+            <Button onClick={handleRefresh}>Try Again</Button>
+        </Box>
+        );
+    }
+    if (isError || !projectEntry) return <Typography>Project not found. Please check the ID.</Typography>;
+
+    if (!id) {
+        return <Typography>Error: No Project ID provided.</Typography>;
+    }
+
     return (
-        <Card sx={{ maxWidth: 345 }}>
-        <CardMedia
-            sx={{ height: 140 }}
-            title="Project"
-        />
-        <CardContent>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Project Summary
-            </Typography>
-        </CardContent>
-        <CardActions>
-            <Button size="small" variant="contained" onClick={() => {handleEditProject}}>Edit</Button>
-            <Button size="small" variant="contained" onClick={() => {handleTimeEntry}}>Log Time</Button>
-        </CardActions>
-        </Card>
+        <ThemeProvider theme={defaultTheme}>
+            <Container component="main" maxWidth="lg">
+                <Typography variant="h5" sx={{ color: 'text.secondary' }}>
+                {projectEntry?.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {projectEntry?.summary}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Duration: {projectEntry?.durationDays}
+                </Typography>
+                <CardActions>
+                    <Button size="small" variant="contained" onClick={() => handleEditProject(id)}>Edit</Button>
+                    <Button size="small" variant="contained" onClick={() => handleTimeEntry(id)}>Log Time</Button>
+                </CardActions>
+            </Container>
+        </ThemeProvider>
     );
 }

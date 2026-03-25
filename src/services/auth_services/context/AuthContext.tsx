@@ -5,9 +5,6 @@
 - Any component can call useAuth() 
 - Called by AuthProvider
 
-import firebase from 'firebase/compat/app';
-import * as firebaseui from 'firebaseui'
-import 'firebaseui/dist/firebaseui.css'
 */
 import { createContext } from 'react';
 import { type User, type UserCredential } from 'firebase/auth';
@@ -17,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<UserCredential>;
   register: (email: string, pass: string) => Promise<UserCredential>;
+  resetPass: (user: string, pass: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
 }
 
@@ -25,5 +23,6 @@ export const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => { throw new Error("AuthContext not initialized"); },
   register: async () => { throw new Error("AuthContext not initialized"); },
+  resetPass: async () => { throw new Error("AuthContext not initialized"); },
   logout: async () => { throw new Error("AuthContext not initialized"); },
 });

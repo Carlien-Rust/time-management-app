@@ -1,11 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import EditProject from "../../../components/EditProjectModal";
 
-const id = 1;
-
-export const Route = createFileRoute(`/project/${id}/edit-project`)({
-  component: RouteComponent,
+export const Route = createFileRoute('/project/$id/edit-project')({
+  component: EditProject
 })
-
-function RouteComponent() {
-  return <div>Hello "/edit-project"!</div>
-}

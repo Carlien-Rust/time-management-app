@@ -127,3 +127,27 @@ export default defineConfig([
 # Areas of struggle
 
 1) Authentication - implementation
+- Auth service and the Routing layer bridging 
+2) React "Rules of Hooks" and Event Listeners in useEffect
+3) CSS implementation and starting this from scratch
+- The "Scope" of Global UI and how to setup 
+4) Routing Side-Effects
+- https://mui.com/material-ui/api/modal/
+- https://tanstack.com/router/latest/docs/framework/react/guide/navigation
+- https://www.google.com/search?q=https://mui.com/material-ui/react-text-field/%23type-quot-date-quot-
+5) Error Handling
+- https://firebase.google.com/docs/auth/web/password-auth
+- https://tanstack.com/router/latest/docs/framework/react/guide/authenticated-routes
+- https://mui.com/material-ui/react-alert/
+- Not found pages, error messages (which ones to include)
+
+
+
+      const url = import.meta.env.VITE_API_URL;
+      const idToken = await response.user.getIdToken();
+      fetch(url,{
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+        }
+      }); 

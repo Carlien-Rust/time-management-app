@@ -16,7 +16,6 @@ export default function ProjectPage() {
     return (
         <main>
             <h2>Welcome to Projects!</h2>
-            <p>Implement project name here</p>
             <ProjectCard />
         </main>
     );

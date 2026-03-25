@@ -13,44 +13,50 @@ Active styling – The currently selected route is visually distinct (e.g., bold
 import "../styles/Sidebar.css";
 import { Box, Drawer, Divider, Toolbar, List, ListItemText, ListItemButton  } from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
+import { useGetProjects } from "../hooks/useGetIds";
+import { useParams } from "@tanstack/react-router";
 
 const drawerWidth = 120;
 
 export default function Sidebar() {
-
   const { handleClickOverview, handleAddProject, handleClickProject } = useNavigationManager();
+  const { data: projects, isLoading, isError, refetch } = useGetProjects(); 
   
-  // Hook for fetching project names and ids
-
-  const navItems = [
-    { id: 'add-project', label: 'Add new', action: handleAddProject },
-    { id: 'overview', label: 'Overview', action: handleClickOverview },
-    { id: '1', label: 'Project 1', action: () => handleClickProject('1') },
-    { id: '2', label: 'Project 2', action: () => handleClickProject('2') },
-  ];
+  // Use params just to "highlight" which one is active
+  const params = useParams({ strict: false });
+  const currentId = params.id;
 
   return (
     <Box>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="permanent"
-        //anchor="left"
-      >
+      <Drawer variant="permanent" sx={{ width: drawerWidth }}>
         <Toolbar />
         <Divider />
         <List>
-          {navItems.map(item => (
-              <ListItemButton key={item.id} onClick={item.action}>
-                <ListItemText primary={item.label} />
+          {/* STATIC ITEMS (Always there) */}
+          <ListItemButton onClick={handleAddProject}>
+            <ListItemText primary="Add new" />
+          </ListItemButton>
+
+          <ListItemButton onClick={handleClickOverview} selected={!currentId}>
+            <ListItemText primary="Overview" />
+          </ListItemButton>
+
+          <Divider />
+
+          {/* DYNAMIC ITEMS (Looping through the database) */}
+          {isLoading ? (
+            <ListItemText primary="Loading..." sx={{ p: 2 }} />
+          ) : (
+            projects?.map((project) => (
+              <ListItemButton 
+                key={project.id} 
+                onClick={() => handleClickProject(project.id)}
+                selected={currentId === project.id}
+              >
+                <ListItemText primary={project.name} />
               </ListItemButton>
-          ))}
+            ))
+          )}
         </List>
       </Drawer>
     </Box>
