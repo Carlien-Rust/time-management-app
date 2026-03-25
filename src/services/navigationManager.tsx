@@ -41,6 +41,20 @@ export function useNavigationManager() {
         });
     };
 
+    //Time card - Edit 
+    const handleEditTime = (id: string) => {
+        navigate({ to: "/project/$id/edit-time",
+            params: { id } 
+        });
+    };
+
+    //Time card - Add
+    const handleAddTime = (id: string) => {
+        navigate({ to: "/project/$id/add-new-time",
+            params: { id }
+        });
+    };
+
    // Profile
     const handleProfile = () => {
         navigate({ to: "/profile" });
@@ -62,6 +76,8 @@ export function useNavigationManager() {
     handleAddProject,
     handleEditProject,
     handleTimeEntry,
+    handleAddTime,
+    handleEditTime,
     handleRegister,
     handleProfile,
     handleReset,

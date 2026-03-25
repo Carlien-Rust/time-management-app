@@ -10,6 +10,11 @@ Re-auth and update password
 Success message
 
 Reuse for Forget Password
+
+-- Clickup ticket
+Add “Forgot password?” link on login page that triggers sendPasswordResetEmail.
+Email delivered.
+Toast says “Reset link sent”.
 */
 
 import * as React from 'react';

@@ -6,6 +6,10 @@
 - will be wrapper in App for secure entry
 - called by App
 - will contain Login/Logout actions that gets called by useAuth hook
+
+-- Clickup ticket
+Enable Email/Password sign-in
+Copy config vars into .env.local
 */
 
 import React, { useContext, useEffect, useState, type PropsWithChildren } from 'react';

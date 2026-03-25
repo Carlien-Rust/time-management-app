@@ -3,6 +3,9 @@ Add new project
 Include project name, project duration (start/end), overview of single project
 
 Need to add API call to create project
+
+-- Clickup ticket
+Update name, save; card text updates without page reload.
 */
 
 import * as React from 'react';
@@ -35,7 +38,6 @@ export default function EditProject() {
         event.preventDefault();
         setError(null);
         setLoading(true);
-        // populate form with fetched data and allow update
 
         const formData = new FormData(event.currentTarget);
         const projectData = {
@@ -71,7 +73,7 @@ export default function EditProject() {
         >
             <Box sx={style} component="form" onSubmit={handleSubmit}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Add new project
+                    Edit project
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                 <TextField
@@ -125,18 +127,18 @@ export default function EditProject() {
                     defaultValue={projectEntry?.summary}
                 />
                 <Button 
+                    variant="contained" 
+                    type="submit"
+                    disabled={loading}
+                >
+                    {loading ? "Saving..." : "Save Changes"}
+                </Button>
+                <Button 
                     type="button"
                     onClick={() => handleClickProject(id)} 
                     disabled={loading} 
                 >
                     Cancel
-                </Button>
-                <Button 
-                    variant="contained" 
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? "Creating..." : "Create Project"}
                 </Button>
             </Box>
         </Modal>

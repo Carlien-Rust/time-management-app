@@ -1,43 +1,28 @@
 /*
-src/components/ProjectCard.jsx
-
-Include project name, project duration (start/end), overview of single project
-Link to "Edit project details" and "Log time entry" modals
-Called by Project Page
-
-routes for projects: `/project/${id}/edit-project` and `/project/${id}/add-time`
-
-TODO:
-Need to receive project id from Project Page
-Hook for fetching project info based on id
-Render Project card with the project info:
-- Dates
-- Project summary
-- Graphs
-- Edit and Time log buttons that link to modals 
-
-
--- Clickup ticket
-Successful delete removes card immediately.
-Projects with linked entries return error → toast “Cannot delete: project has time entries.”
-
+-- Clickup Ticket
+Build <TimeEntryTable> using MRT. Columns: Date, Project chip, Duration (h), Notes, row actions (edit / delete).
+Acceptance Criteria
+Pagination (10 rows) handled by hook page,limit
+Footer row shows page total hours.
+While fetching: skeleton rows.
+On fetch error: alert banner with retry.
 */
 import { Container, CardActions, Button, Box, Typography } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
-import { useGetProjectsById } from "../hooks/useGetIds";
+import { useGetTimeLogById } from "../hooks/useGetTime";
 
-export default function ProjectCard() {
+export default function TimeCard() {
 
     const defaultTheme = createTheme();
 
     const params = useParams({ strict: false });
     const id = params?.id;
 
-    const { data: projectEntry, isLoading, isError, refetch } = useGetProjectsById(id); 
+    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogById(id); 
 
-    const { handleEditProject, handleTimeEntry } = useNavigationManager();
+    const { handleEditTime, handleAddTime } = useNavigationManager();
 
     const handleRefresh = () => {
         refetch(); 
@@ -50,7 +35,7 @@ export default function ProjectCard() {
     //     setData(updatedData);
     // };
 
-    if (id && isLoading) return <Typography>Loading Project Data...</Typography>;
+    if (id && isLoading) return <Typography>Loading Time Data...</Typography>;
     if (id && isError) {
         return (
         <Box>
@@ -59,7 +44,7 @@ export default function ProjectCard() {
         </Box>
         );
     }
-    if (isError || !projectEntry) return <Typography>Project not found. Please check the ID.</Typography>;
+    if (isError || !timeData) return <Typography>Project not found. Please check the ID.</Typography>;
 
     if (!id) {
         return <Typography>Error: No Project ID provided.</Typography>;
@@ -69,23 +54,26 @@ export default function ProjectCard() {
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="lg">
                 <Typography variant="h5" sx={{ color: 'text.secondary' }}>
-                {projectEntry?.name}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {projectEntry?.summary}
+                {timeData?.projectId}
                 </Typography>
                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Duration: {projectEntry?.durationDays}
+                Duration: {timeData?.durationHours}
                 </Typography>
                 <CardActions>
                     <Button 
                         size="small" 
                         variant="contained" 
-                        onClick={() => handleEditProject(id)}
+                        onClick={() => handleAddTime(id)}
+                    >
+                        Add
+                    </Button>
+                    <Button 
+                        size="small" 
+                        variant="contained" 
+                        onClick={() => handleEditTime(id)}
                     >
                         Edit
                     </Button>
-                    <Button size="small" variant="contained" onClick={() => handleTimeEntry(id)}>Log Time</Button>
                     <Button 
                         size="small" 
                         variant="contained"

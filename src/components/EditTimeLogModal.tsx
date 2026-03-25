@@ -1,16 +1,13 @@
 /*
-Add new project
-Include project name, project duration (start/end), overview of single project
-
-Need to add API call to create project
-
 -- Clickup ticket
-“New Entry” Modal (Project, Date, Duration, Notes) with validation. Creates and updates using API
+Update name, save; card text updates without page reload.
 */
 
 import * as React from 'react';
-import {Box, Typography, Modal, TextField , Button, Alert} from '@mui/material';
+import {Box, Typography, Modal, TextField , Button, Alert } from '@mui/material';
+import { useParams } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
+import { useGetTimeLogById } from "../hooks/useGetTime";
 
 const style = {
   position: 'absolute',
@@ -22,107 +19,112 @@ const style = {
   p: 4,
 };
 
-export default function AddProject() {
-    const { handleClickOverview } = useNavigationManager();
+export default function EditTime() {
+    const { handleClickProject } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
+
+    const params = useParams({ strict: false });
+    const id = params?.id;
+    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogById(id);
 
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setError(null);
+        setLoading(true);
 
         const formData = new FormData(event.currentTarget);
-        const projectData = {
-            name: formData.get('project_name'),
-            startDate: formData.get('start_date'),
-            endDate: formData.get('end_date'),
-            durationDays: formData.get('durationDays'),
-            summary: formData.get('summary'),
+        const timeData = {
+            projectId: formData.get('project_id'),
+            date: formData.get('date'),
+            startTime: formData.get('start_time'),
+            endTime: formData.get('end_time'),
+            durationHours: formData.get('durationHours'),
+            description: formData.get('description'),
         };
 
         try {
-            console.log("Saving to Firebase:", projectData);
+            console.log("Saving to Firebase:", timeData);
             // await createProject(projectData); // Your Firebase service call
             
             setLoading(false);
-            handleClickOverview();
+            handleClickProject(id!);
 
         } catch (err: any) {
             setLoading(false);
             setError("Failed to create project. Please check your inputs.");
         }
     };
+    
+    if (!id) {
+        return <Typography>Error: No Project ID provided.</Typography>;
+    }
 
     return (
         <div>
         <Modal
             open={true}
-            onClose={handleClickOverview}
+            onClose={handleClickProject}
         >
             <Box sx={style} component="form" onSubmit={handleSubmit}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Add new project
+                    Edit project
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    id="project_name"
-                    label="Project Name"
-                    name="project_name"
+                    id="project_id"
+                    label="Project ID"
+                    name="project_id"
+                    defaultValue={timeData?.projectId}
                     autoFocus
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="start_date"
-                    label="Start Date"
-                    type="date"
-                    id="start_date"
+                    name="start_time"
+                    label="Start Time"
+                    type="time"
+                    id="start_time"
+                    defaultValue={timeData?.startTime}
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="end_date"
-                    label="End Date"
-                    type="date"
-                    id="end_date"
+                    name="end_time"
+                    label="End Time"
+                    type="time"
+                    id="end_time"
+                    defaultValue={timeData?.endTime}
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="durationDays"
-                    label="Duration in days"
+                    name="durationHours"
+                    label="Duration in hours"
                     type="number"
-                    id="durationDays"
+                    id="durationHours"
+                    defaultValue={timeData?.durationHours}
                 />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="summary"
-                    label="Project Overview"
-                    type="text"
-                    id="summary"
-                />
-                <Button 
-                    type="button"
-                    onClick={handleClickOverview} 
-                    disabled={loading} 
-                >
-                    Cancel
-                </Button>
                 <Button 
                     variant="contained" 
                     type="submit"
                     disabled={loading}
                 >
-                    {loading ? "Creating..." : "Create Project"}
+                    {loading ? "Saving..." : "Save Changes"}
+                </Button>
+                <Button 
+                    type="button"
+                    onClick={() => handleClickProject(id)} 
+                    disabled={loading} 
+                >
+                    Cancel
                 </Button>
             </Box>
         </Modal>

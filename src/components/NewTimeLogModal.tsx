@@ -1,11 +1,7 @@
 /*
-Add new project
-Include project name, project duration (start/end), overview of single project
-
-Need to add API call to create project
-
 -- Clickup ticket
-“New Entry” Modal (Project, Date, Duration, Notes) with validation. Creates and updates using API
+Successful create closes modal, adds new card instantly.
+Form fields validated.
 */
 
 import * as React from 'react';
@@ -22,7 +18,7 @@ const style = {
   p: 4,
 };
 
-export default function AddProject() {
+export default function AddTime() {
     const { handleClickOverview } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
@@ -33,16 +29,17 @@ export default function AddProject() {
         setError(null);
 
         const formData = new FormData(event.currentTarget);
-        const projectData = {
-            name: formData.get('project_name'),
-            startDate: formData.get('start_date'),
-            endDate: formData.get('end_date'),
-            durationDays: formData.get('durationDays'),
-            summary: formData.get('summary'),
+        const timeData = {
+            projectId: formData.get('project_id'),
+            date: formData.get('date'),
+            startTime: formData.get('start_time'),
+            endTime: formData.get('end_time'),
+            durationHours: formData.get('durationHours'),
+            description: formData.get('description'),
         };
 
         try {
-            console.log("Saving to Firebase:", projectData);
+            console.log("Saving to Firebase:", timeData);
             // await createProject(projectData); // Your Firebase service call
             
             setLoading(false);
@@ -69,46 +66,37 @@ export default function AddProject() {
                     margin="normal"
                     required
                     fullWidth
-                    id="project_name"
-                    label="Project Name"
-                    name="project_name"
+                    id="project_id"
+                    label="Project ID"
+                    name="project_id"
                     autoFocus
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="start_date"
-                    label="Start Date"
-                    type="date"
-                    id="start_date"
+                    name="start_time"
+                    label="Start Time"
+                    type="time"
+                    id="start_time"
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="end_date"
-                    label="End Date"
-                    type="date"
-                    id="end_date"
+                    name="end_time"
+                    label="End Time"
+                    type="time"
+                    id="end_time"
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="durationDays"
-                    label="Duration in days"
+                    name="durationHours"
+                    label="Duration in hours"
                     type="number"
-                    id="durationDays"
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="summary"
-                    label="Project Overview"
-                    type="text"
-                    id="summary"
+                    id="durationHours"
                 />
                 <Button 
                     type="button"
@@ -122,7 +110,7 @@ export default function AddProject() {
                     type="submit"
                     disabled={loading}
                 >
-                    {loading ? "Creating..." : "Create Project"}
+                    {loading ? "Logging..." : "Log Time"}
                 </Button>
             </Box>
         </Modal>
