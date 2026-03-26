@@ -6,31 +6,18 @@ import { timeLogs } from "../mockData/timeLog";
 
 // Simulating an API call for getting all users and users by ID
 // Simulation Functions
-export const fetchTimeLog = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // 1 second delay
-  return timeLogs;
-};
-
-export const fetchTimeLogById = async (id: string) => {
+export const fetchTimeLogsById = async (projectId: string) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
-  return timeLogs.find(t => t.id === id); // Returns just the specific user object
+  return timeLogs.filter(t => t.projectId === projectId); // Returns all entries just the specific user object
 };
 
-// Hooks
-export const useGetTimeLog = () => {
+export const useGetTimeLogsById = (projectId: string | undefined) => {
   return useQuery({
-    queryKey: ["timelogs"],
-    queryFn: fetchTimeLog,
-  });
-};
-
-export const useGetTimeLogById = (id: string | undefined) => {
-  return useQuery({
-    queryKey: ["timelogs", id],
+    queryKey: ["timelogs", projectId],
     queryFn: () => {
-      if (!id) throw new Error("ID is required");
-      return fetchTimeLogById(id); 
+      if (!projectId) throw new Error("ID is required");
+      return fetchTimeLogsById(projectId); 
     },
-    enabled: !!id, // Only runs if ID exists
+    enabled: !!projectId, // Only runs if ID exists
   });
 };

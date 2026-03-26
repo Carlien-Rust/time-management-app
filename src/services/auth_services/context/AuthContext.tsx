@@ -7,14 +7,14 @@
 
 */
 import { createContext } from 'react';
-import { type User, type UserCredential } from 'firebase/auth';
+import { type Auth, type User, type UserCredential } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<UserCredential>;
   register: (email: string, pass: string) => Promise<UserCredential>;
-  resetPass: (user: string, pass: string) => Promise<UserCredential>;
+  resetPass: (auth: Auth, pass: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 

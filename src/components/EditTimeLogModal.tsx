@@ -7,7 +7,7 @@ import * as React from 'react';
 import {Box, Typography, Modal, TextField , Button, Alert } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
-import { useGetTimeLogById } from "../hooks/useGetTime";
+import { useGetTimeLogsById } from "../hooks/useGetTime";
 
 const style = {
   position: 'absolute',
@@ -19,14 +19,19 @@ const style = {
   p: 4,
 };
 
-export default function EditTime() {
-    const { handleClickProject } = useNavigationManager();
+export default function EditTimeLog() {
+    const { handleTimeEntry } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
 
     const params = useParams({ strict: false });
-    const id = params?.id;
-    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogById(id);
+    const { id, logId } = params;
+
+    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogsById(id);
+
+    const currentEntry = React.useMemo(() => {
+        return timeData?.find((log) => log.logId === logId);
+    }, [timeData, logId]);
 
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -35,21 +40,22 @@ export default function EditTime() {
         setLoading(true);
 
         const formData = new FormData(event.currentTarget);
-        const timeData = {
-            projectId: formData.get('project_id'),
+        // Update to use an array
+        const upateEntry = {
+            logId: logId,
+            projectId: id,
             date: formData.get('date'),
             startTime: formData.get('start_time'),
             endTime: formData.get('end_time'),
-            durationHours: formData.get('durationHours'),
+            durationHours: Number(formData.get('durationHours')),
             description: formData.get('description'),
         };
 
         try {
-            console.log("Saving to Firebase:", timeData);
-            // await createProject(projectData); // Your Firebase service call
-            
+            console.log("Saving to Firebase:", upateEntry);
+            // await updateTimeLog(upateEntry); // Your Firebase service call
+
             setLoading(false);
-            handleClickProject(id!);
 
         } catch (err: any) {
             setLoading(false);
@@ -57,19 +63,22 @@ export default function EditTime() {
         }
     };
     
-    if (!id) {
-        return <Typography>Error: No Project ID provided.</Typography>;
+    if (!id || !logId) {
+        return <Typography>Error: No ID provided.</Typography>;
+    }
+    if (!currentEntry && !isLoading) {
+        return <Typography>Error: Specific log entry not found.</Typography>;
     }
 
     return (
         <div>
         <Modal
             open={true}
-            onClose={handleClickProject}
+            onClose={handleTimeEntry}
         >
             <Box sx={style} component="form" onSubmit={handleSubmit}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Edit project
+                    Edit time log
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                 <TextField
@@ -79,8 +88,8 @@ export default function EditTime() {
                     id="project_id"
                     label="Project ID"
                     name="project_id"
-                    defaultValue={timeData?.projectId}
-                    autoFocus
+                    value={id}
+                    disabled
                 />
                 <TextField
                     margin="normal"
@@ -90,7 +99,7 @@ export default function EditTime() {
                     label="Start Time"
                     type="time"
                     id="start_time"
-                    defaultValue={timeData?.startTime}
+                    defaultValue={currentEntry?.startTime}
                 />
                 <TextField
                     margin="normal"
@@ -100,7 +109,7 @@ export default function EditTime() {
                     label="End Time"
                     type="time"
                     id="end_time"
-                    defaultValue={timeData?.endTime}
+                    defaultValue={currentEntry?.endTime}
                 />
                 <TextField
                     margin="normal"
@@ -110,7 +119,18 @@ export default function EditTime() {
                     label="Duration in hours"
                     type="number"
                     id="durationHours"
-                    defaultValue={timeData?.durationHours}
+                    defaultValue={currentEntry?.durationHours}
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="description"
+                    label="Description"
+                    type="text"
+                    id="description"
+                    value={currentEntry?.description}
+                    disabled
                 />
                 <Button 
                     variant="contained" 
@@ -121,7 +141,7 @@ export default function EditTime() {
                 </Button>
                 <Button 
                     type="button"
-                    onClick={() => handleClickProject(id)} 
+                    onClick={() => handleTimeEntry(id)} 
                     disabled={loading} 
                 >
                     Cancel

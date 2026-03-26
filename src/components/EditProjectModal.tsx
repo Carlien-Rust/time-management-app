@@ -51,9 +51,7 @@ export default function EditProject() {
         try {
             console.log("Saving to Firebase:", projectData);
             // await createProject(projectData); // Your Firebase service call
-            
             setLoading(false);
-            handleClickProject(id!);
 
         } catch (err: any) {
             setLoading(false);

@@ -19,11 +19,10 @@ function RootLayout() {
   const navigate = useNavigate();
   const { handleLogout } = useNavigationManager();
 
-  // Redirect Logic: If not logged in and not already on an auth page, go to login
-  // We use useEffect to avoid "side effects" during the actual render
+  // Redirect Logic:
   useEffect(() => {
     if (!auth.loading && !auth.user) {
-      // Check if we are already on login/signup to avoid infinite loops
+      // Check already on login/signup to avoid infinite loops
       const path = window.location.pathname;
       if (path !== '/login' && path !== '/signup') {handleLogout}
     }

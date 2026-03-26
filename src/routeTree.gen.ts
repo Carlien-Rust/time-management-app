@@ -17,10 +17,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectIdRouteImport } from './routes/project/$id'
-import { Route as ProjectIdEditTimeRouteImport } from './routes/project/$id/edit-time'
 import { Route as ProjectIdEditProjectRouteImport } from './routes/project/$id/edit-project'
 import { Route as ProjectIdAddTimeRouteImport } from './routes/project/$id/add-time'
-import { Route as ProjectIdAddNewTimeRouteImport } from './routes/project/$id/add-new-time'
+import { Route as ProjectIdLogIdEditTimeRouteImport } from './routes/project/$id/$logId/edit-time'
+import { Route as ProjectIdLogIdAddNewTimeRouteImport } from './routes/project/$id/$logId/add-new-time'
 
 const ResetRoute = ResetRouteImport.update({
   id: '/reset',
@@ -62,11 +62,6 @@ const ProjectIdRoute = ProjectIdRouteImport.update({
   path: '/project/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectIdEditTimeRoute = ProjectIdEditTimeRouteImport.update({
-  id: '/edit-time',
-  path: '/edit-time',
-  getParentRoute: () => ProjectIdRoute,
-} as any)
 const ProjectIdEditProjectRoute = ProjectIdEditProjectRouteImport.update({
   id: '/edit-project',
   path: '/edit-project',
@@ -77,11 +72,17 @@ const ProjectIdAddTimeRoute = ProjectIdAddTimeRouteImport.update({
   path: '/add-time',
   getParentRoute: () => ProjectIdRoute,
 } as any)
-const ProjectIdAddNewTimeRoute = ProjectIdAddNewTimeRouteImport.update({
-  id: '/add-new-time',
-  path: '/add-new-time',
+const ProjectIdLogIdEditTimeRoute = ProjectIdLogIdEditTimeRouteImport.update({
+  id: '/$logId/edit-time',
+  path: '/$logId/edit-time',
   getParentRoute: () => ProjectIdRoute,
 } as any)
+const ProjectIdLogIdAddNewTimeRoute =
+  ProjectIdLogIdAddNewTimeRouteImport.update({
+    id: '/$logId/add-new-time',
+    path: '/$logId/add-new-time',
+    getParentRoute: () => ProjectIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -92,10 +93,10 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/reset': typeof ResetRoute
   '/project/$id': typeof ProjectIdRouteWithChildren
-  '/project/$id/add-new-time': typeof ProjectIdAddNewTimeRoute
   '/project/$id/add-time': typeof ProjectIdAddTimeRoute
   '/project/$id/edit-project': typeof ProjectIdEditProjectRoute
-  '/project/$id/edit-time': typeof ProjectIdEditTimeRoute
+  '/project/$id/$logId/add-new-time': typeof ProjectIdLogIdAddNewTimeRoute
+  '/project/$id/$logId/edit-time': typeof ProjectIdLogIdEditTimeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -106,10 +107,10 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/reset': typeof ResetRoute
   '/project/$id': typeof ProjectIdRouteWithChildren
-  '/project/$id/add-new-time': typeof ProjectIdAddNewTimeRoute
   '/project/$id/add-time': typeof ProjectIdAddTimeRoute
   '/project/$id/edit-project': typeof ProjectIdEditProjectRoute
-  '/project/$id/edit-time': typeof ProjectIdEditTimeRoute
+  '/project/$id/$logId/add-new-time': typeof ProjectIdLogIdAddNewTimeRoute
+  '/project/$id/$logId/edit-time': typeof ProjectIdLogIdEditTimeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -121,10 +122,10 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/reset': typeof ResetRoute
   '/project/$id': typeof ProjectIdRouteWithChildren
-  '/project/$id/add-new-time': typeof ProjectIdAddNewTimeRoute
   '/project/$id/add-time': typeof ProjectIdAddTimeRoute
   '/project/$id/edit-project': typeof ProjectIdEditProjectRoute
-  '/project/$id/edit-time': typeof ProjectIdEditTimeRoute
+  '/project/$id/$logId/add-new-time': typeof ProjectIdLogIdAddNewTimeRoute
+  '/project/$id/$logId/edit-time': typeof ProjectIdLogIdEditTimeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,10 +138,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset'
     | '/project/$id'
-    | '/project/$id/add-new-time'
     | '/project/$id/add-time'
     | '/project/$id/edit-project'
-    | '/project/$id/edit-time'
+    | '/project/$id/$logId/add-new-time'
+    | '/project/$id/$logId/edit-time'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -151,10 +152,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset'
     | '/project/$id'
-    | '/project/$id/add-new-time'
     | '/project/$id/add-time'
     | '/project/$id/edit-project'
-    | '/project/$id/edit-time'
+    | '/project/$id/$logId/add-new-time'
+    | '/project/$id/$logId/edit-time'
   id:
     | '__root__'
     | '/'
@@ -165,10 +166,10 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset'
     | '/project/$id'
-    | '/project/$id/add-new-time'
     | '/project/$id/add-time'
     | '/project/$id/edit-project'
-    | '/project/$id/edit-time'
+    | '/project/$id/$logId/add-new-time'
+    | '/project/$id/$logId/edit-time'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -240,13 +241,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/project/$id/edit-time': {
-      id: '/project/$id/edit-time'
-      path: '/edit-time'
-      fullPath: '/project/$id/edit-time'
-      preLoaderRoute: typeof ProjectIdEditTimeRouteImport
-      parentRoute: typeof ProjectIdRoute
-    }
     '/project/$id/edit-project': {
       id: '/project/$id/edit-project'
       path: '/edit-project'
@@ -261,28 +255,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectIdAddTimeRouteImport
       parentRoute: typeof ProjectIdRoute
     }
-    '/project/$id/add-new-time': {
-      id: '/project/$id/add-new-time'
-      path: '/add-new-time'
-      fullPath: '/project/$id/add-new-time'
-      preLoaderRoute: typeof ProjectIdAddNewTimeRouteImport
+    '/project/$id/$logId/edit-time': {
+      id: '/project/$id/$logId/edit-time'
+      path: '/$logId/edit-time'
+      fullPath: '/project/$id/$logId/edit-time'
+      preLoaderRoute: typeof ProjectIdLogIdEditTimeRouteImport
+      parentRoute: typeof ProjectIdRoute
+    }
+    '/project/$id/$logId/add-new-time': {
+      id: '/project/$id/$logId/add-new-time'
+      path: '/$logId/add-new-time'
+      fullPath: '/project/$id/$logId/add-new-time'
+      preLoaderRoute: typeof ProjectIdLogIdAddNewTimeRouteImport
       parentRoute: typeof ProjectIdRoute
     }
   }
 }
 
 interface ProjectIdRouteChildren {
-  ProjectIdAddNewTimeRoute: typeof ProjectIdAddNewTimeRoute
   ProjectIdAddTimeRoute: typeof ProjectIdAddTimeRoute
   ProjectIdEditProjectRoute: typeof ProjectIdEditProjectRoute
-  ProjectIdEditTimeRoute: typeof ProjectIdEditTimeRoute
+  ProjectIdLogIdAddNewTimeRoute: typeof ProjectIdLogIdAddNewTimeRoute
+  ProjectIdLogIdEditTimeRoute: typeof ProjectIdLogIdEditTimeRoute
 }
 
 const ProjectIdRouteChildren: ProjectIdRouteChildren = {
-  ProjectIdAddNewTimeRoute: ProjectIdAddNewTimeRoute,
   ProjectIdAddTimeRoute: ProjectIdAddTimeRoute,
   ProjectIdEditProjectRoute: ProjectIdEditProjectRoute,
-  ProjectIdEditTimeRoute: ProjectIdEditTimeRoute,
+  ProjectIdLogIdAddNewTimeRoute: ProjectIdLogIdAddNewTimeRoute,
+  ProjectIdLogIdEditTimeRoute: ProjectIdLogIdEditTimeRoute,
 }
 
 const ProjectIdRouteWithChildren = ProjectIdRoute._addFileChildren(

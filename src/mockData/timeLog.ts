@@ -1,7 +1,7 @@
 // src/mockData/timeLogs.ts
 
 export interface TimeLog {
-  id: string;
+  logId: string;
   projectId: string;
   date: string;       // ISO string (YYYY-MM-DD)
   startTime: string;  // HH:mm
@@ -13,7 +13,7 @@ export interface TimeLog {
 export const timeLogs: TimeLog[] = [
   // Logs for AXIS Trader MVP (proj_001)
   {
-    id: "log_001",
+    logId: "log_001",
     projectId: "proj_001",
     date: "2025-10-05",
     startTime: "09:00",
@@ -22,7 +22,7 @@ export const timeLogs: TimeLog[] = [
     description: "Setting up Firebase Auth and project structure."
   },
   {
-    id: "log_002",
+    logId: "log_002",
     projectId: "proj_001",
     date: "2025-10-06",
     startTime: "13:00",
@@ -33,7 +33,7 @@ export const timeLogs: TimeLog[] = [
 
   // Logs for Frontend UI Migration (proj_002)
   {
-    id: "log_003",
+    logId: "log_003",
     projectId: "proj_002",
     date: "2025-11-21",
     startTime: "08:30",
@@ -44,7 +44,7 @@ export const timeLogs: TimeLog[] = [
 
   // Logs for Evaluation Engine Refactor (proj_003)
   {
-    id: "log_004",
+    logId: "log_004",
     projectId: "proj_003",
     date: "2025-12-13",
     startTime: "10:00",
@@ -55,7 +55,7 @@ export const timeLogs: TimeLog[] = [
 
   // Logs for Leaderboard Optimization (proj_004)
   {
-    id: "log_005",
+    logId: "log_005",
     projectId: "proj_004",
     date: "2026-01-07",
     startTime: "14:00",
@@ -66,7 +66,7 @@ export const timeLogs: TimeLog[] = [
 
   // Logs for Error Handling System (proj_005)
   {
-    id: "log_006",
+    logId: "log_006",
     projectId: "proj_005",
     date: "2026-01-21",
     startTime: "09:00",

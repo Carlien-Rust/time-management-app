@@ -42,16 +42,16 @@ export function useNavigationManager() {
     };
 
     //Time card - Edit 
-    const handleEditTime = (id: string) => {
-        navigate({ to: "/project/$id/edit-time",
-            params: { id } 
+    const handleEditTime = (projectId: string, logId: string) => {
+        navigate({ to: "/project/$id/$logId/edit-time",
+            params: { id: projectId, logId } 
         });
     };
 
     //Time card - Add
-    const handleAddTime = (id: string) => {
-        navigate({ to: "/project/$id/add-new-time",
-            params: { id }
+    const handleAddTime = (projectId: string, logId: string) => {
+        navigate({ to: "/project/$id/$logId/add-new-time",
+            params: { id: projectId, logId }
         });
     };
 

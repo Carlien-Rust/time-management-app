@@ -34,7 +34,7 @@ export default function Sidebar() {
         <List>
           {/* STATIC ITEMS (Always there) */}
           <ListItemButton onClick={handleAddProject}>
-            <ListItemText primary="Add new" />
+            <ListItemText primary="Add new project" />
           </ListItemButton>
 
           <ListItemButton onClick={handleClickOverview} selected={!currentId}>

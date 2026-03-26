@@ -23,6 +23,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from "../../services/navigationManager";
 import { useAuth } from '../../services/auth_services/AuthProvider';
+import { auth } from '../../services/auth_services/config/firebaseConfig';
 
 const defaultTheme = createTheme();
 
@@ -39,7 +40,6 @@ export default function ResetPassword() {
     setError(null);
 
     const data = new FormData(event.currentTarget);
-    const user = data.get('user') as string;
     const currentPass = data.get('current-password') as string;
     const newPass = data.get('new-password') as string;
 
@@ -54,7 +54,7 @@ export default function ResetPassword() {
     try
     {
       setLoading(true);
-      await resetPass(user, newPass);
+      await resetPass(auth, newPass);
       handleLogout();
 
     } catch (error: any) {

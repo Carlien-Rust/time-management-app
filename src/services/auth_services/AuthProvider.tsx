@@ -20,11 +20,10 @@ import {
   signOut,
   type User, 
   sendPasswordResetEmail,
-  updatePassword
+  type Auth,
 } from 'firebase/auth';
 import { auth } from './config/firebaseConfig'; 
 import { AuthContext } from './context/AuthContext';
-import ResetPassword from '../../pages/auth/ResetPassword';
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -33,6 +32,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   // Sign actions: use in components by importing [import { useAuth } from '../services/auth_services/AuthProvider'; and const { const names - deconstruct } = useAuth();]
 
   const login = (email: string, pass: string) => {
+    console.log('ha')
     return signInWithEmailAndPassword(auth, email, pass);
   };
 
@@ -40,8 +40,8 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return createUserWithEmailAndPassword(auth, email, pass);
   };
 
-  const resetPass = (user: string, pass: string) => {
-    return updatePassword(user, pass);
+  const resetPass = (auth: Auth, pass: string) => {
+    return sendPasswordResetEmail(auth, pass);
   };
 
   const logout = () => {

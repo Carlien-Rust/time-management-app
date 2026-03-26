@@ -1,12 +1,13 @@
 /*
 -- Clickup ticket
 Successful create closes modal, adds new card instantly.
-Form fields validated.
+Form fields validated. 
 */
 
 import * as React from 'react';
 import {Box, Typography, Modal, TextField , Button, Alert} from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
+import { useParams } from "@tanstack/react-router";
 
 const style = {
   position: 'absolute',
@@ -18,10 +19,14 @@ const style = {
   p: 4,
 };
 
-export default function AddTime() {
-    const { handleClickOverview } = useNavigationManager();
+export default function AddTimeLog() {
+    const { handleTimeEntry } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
+
+    const params = useParams({ strict: false });
+    const id = params?.id; // This is the Project ID from the URL
+    console.log(`ID incoming: ${id}`);
 
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,21 +34,20 @@ export default function AddTime() {
         setError(null);
 
         const formData = new FormData(event.currentTarget);
+
         const timeData = {
-            projectId: formData.get('project_id'),
+            projectId: id,
             date: formData.get('date'),
             startTime: formData.get('start_time'),
             endTime: formData.get('end_time'),
-            durationHours: formData.get('durationHours'),
+            durationHours: Number(formData.get('durationHours')),
             description: formData.get('description'),
         };
 
         try {
             console.log("Saving to Firebase:", timeData);
-            // await createProject(projectData); // Your Firebase service call
-            
+            // await createTimeLog(timeData); // Your Firebase service call
             setLoading(false);
-            handleClickOverview();
 
         } catch (err: any) {
             setLoading(false);
@@ -51,25 +55,29 @@ export default function AddTime() {
         }
     };
 
+    if (!id) {
+        return <Typography>Error: No Project ID provided.</Typography>;
+    }
+
     return (
         <div>
         <Modal
             open={true}
-            onClose={handleClickOverview}
+            onClose={() =>handleTimeEntry(id)}
         >
             <Box sx={style} component="form" onSubmit={handleSubmit}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
-                    Add new project
+                    Log new time
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
                 <TextField
                     margin="normal"
-                    required
                     fullWidth
                     id="project_id"
                     label="Project ID"
                     name="project_id"
-                    autoFocus
+                    value={id}
+                    disabled
                 />
                 <TextField
                     margin="normal"
@@ -98,9 +106,18 @@ export default function AddTime() {
                     type="number"
                     id="durationHours"
                 />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="description"
+                    label="Description"
+                    type="text"
+                    id="description"
+                />
                 <Button 
                     type="button"
-                    onClick={handleClickOverview} 
+                    onClick={() => handleTimeEntry(id)} 
                     disabled={loading} 
                 >
                     Cancel

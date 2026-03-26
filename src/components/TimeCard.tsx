@@ -1,17 +1,12 @@
 /*
--- Clickup Ticket
-Build <TimeEntryTable> using MRT. Columns: Date, Project chip, Duration (h), Notes, row actions (edit / delete).
-Acceptance Criteria
-Pagination (10 rows) handled by hook page,limit
-Footer row shows page total hours.
-While fetching: skeleton rows.
-On fetch error: alert banner with retry.
+
 */
-import { Container, CardActions, Button, Box, Typography } from '@mui/material';
+import { Container, CardActions, Button, Box, Typography, Alert } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
-import { useGetTimeLogById } from "../hooks/useGetTime";
+import { useGetTimeLogsById } from "../hooks/useGetTime";
+import TimeLogTable from "./TimeLogTable";
 
 export default function TimeCard() {
 
@@ -20,14 +15,15 @@ export default function TimeCard() {
     const params = useParams({ strict: false });
     const id = params?.id;
 
-    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogById(id); 
+    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogsById(id); 
 
+    const logId = "log_001";
     const { handleEditTime, handleAddTime } = useNavigationManager();
 
-    const handleRefresh = () => {
-        refetch(); 
-        console.log("Refreshing encryption servers...");
-    };
+    // const handleRefresh = () => {
+    //     refetch(); 
+    //     console.log("Refreshing encryption servers...");
+    // };
 
     // Add mutation hook for delete project
     // const handleDelete = (projects.id) => {
@@ -35,51 +31,40 @@ export default function TimeCard() {
     //     setData(updatedData);
     // };
 
-    if (id && isLoading) return <Typography>Loading Time Data...</Typography>;
-    if (id && isError) {
-        return (
-        <Box>
-            <Typography>Error loading user data.</Typography>
-            <Button onClick={handleRefresh}>Try Again</Button>
-        </Box>
-        );
-    }
-    if (isError || !timeData) return <Typography>Project not found. Please check the ID.</Typography>;
-
-    if (!id) {
+    if (isLoading) return <Typography>Loading Time Data...</Typography>;
+    if (isError) return <Typography>Project not found. Please check the ID.</Typography>;
+    if (!id || !logId) {
         return <Typography>Error: No Project ID provided.</Typography>;
+    }
+    if (!timeData || timeData.length === 0) {
+        return (
+            <Container>
+                <Typography variant="h6">Time Entries</Typography>
+                <Alert severity="info" sx={{ my: 2 }}>
+                    No time logs found for this project.
+                </Alert>
+                <Button variant="contained" onClick={() => handleAddTime(id, logId)}>
+                    Log your first entry
+                </Button>
+            </Container>
+        );
     }
 
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="lg">
-                <Typography variant="h5" sx={{ color: 'text.secondary' }}>
-                {timeData?.projectId}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Duration: {timeData?.durationHours}
-                </Typography>
+                <Typography variant="h6" sx={{ mb: 2 }}>Time Entries</Typography>
+                < TimeLogTable
+                    logs={timeData || []} 
+                    projectId={id}
+                />
                 <CardActions>
                     <Button 
                         size="small" 
                         variant="contained" 
-                        onClick={() => handleAddTime(id)}
+                        onClick={() => handleAddTime(id, logId)}
                     >
-                        Add
-                    </Button>
-                    <Button 
-                        size="small" 
-                        variant="contained" 
-                        onClick={() => handleEditTime(id)}
-                    >
-                        Edit
-                    </Button>
-                    <Button 
-                        size="small" 
-                        variant="contained"
-                        type="button"
-                    >
-                        Delete
+                        Log new time
                     </Button>
                 </CardActions>
             </Container>

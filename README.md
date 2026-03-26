@@ -43,6 +43,74 @@ Routing Library: TanStack Router
 npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mui/x-charts react-hook-form firebase @tanstack/react-router
 ```
 
+## Project Structure
+
+```
+.
+├── App.css
+├── App.tsx
+├── assets
+│   ├── hero.png
+│   ├── react.svg
+│   └── vite.svg
+├── components
+│   ├── EditProjectModal.tsx
+│   ├── EditTimeLogModal.tsx
+│   ├── Header.tsx
+│   ├── NewProjectModal.tsx
+│   ├── NewTimeLogModal.tsx
+│   ├── ProfileCard.tsx
+│   ├── ProjectCard.tsx
+│   ├── Sidebar.tsx
+│   ├── TimeCard.tsx
+│   └── TimeLogTable.tsx
+├── hooks
+│   ├── useGetIds.tsx
+│   └── useGetTime.tsx
+├── index.css
+├── main.tsx
+├── mockData
+│   ├── projects.ts
+│   └── timeLog.ts
+├── pages
+│   ├── DashboardPage.tsx
+│   ├── ProfilePage.tsx
+│   ├── ProjectPage.tsx
+│   ├── TimeLogPage.tsx
+│   └── auth
+│       ├── LoginPage.tsx
+│       ├── RegisterPage.tsx
+│       └── ResetPassword.tsx
+├── routeTree.gen.ts
+├── routes
+│   ├── __root.tsx
+│   ├── dashboard.tsx
+│   ├── index.tsx
+│   ├── login.tsx
+│   ├── new-project.tsx
+│   ├── profile.tsx
+│   ├── project
+│   │   ├── $id
+│   │   └── $id.tsx
+│   ├── register.tsx
+│   └── reset.tsx
+├── services
+│   ├── auth_services
+│   │   ├── AuthProvider.tsx
+│   │   ├── config
+│   │   └── context
+│   └── navigationManager.tsx
+└── styles
+    ├── Sidebar.css
+    ├── ThemeProvider.tsx
+    ├── core
+    │   ├── breakpoints.ts
+    │   ├── index.ts
+    │   └── utils.ts
+    └── createTheme.ts
+
+```
+
 ## Useful links
 
 Templates: https://mui.com/material-ui/getting-started/templates
@@ -140,6 +208,8 @@ export default defineConfig([
 - https://tanstack.com/router/latest/docs/framework/react/guide/authenticated-routes
 - https://mui.com/material-ui/react-alert/
 - Not found pages, error messages (which ones to include)
+6) Routing
+- using $id and structure for tree to render and pass information correctly
 
 
 
@@ -151,3 +221,6 @@ export default defineConfig([
           'Authorization': `Bearer ${idToken}`,
         }
       }); 
+
+https://if6zo43awg.execute-api.af-south-1.amazonaws.com/dev/docs#/Projects/ProjectsController_createProject
+Swagger: https://if6zo43awg.execute-api.af-south-1.amazonaws.com/dev/docs#/Projects/ProjectsController_createProject/docs/dev

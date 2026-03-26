@@ -12,7 +12,6 @@ import TimeCard from "../components/TimeCard";
 export default function TimeLogPage() {
     return (
         <main>
-            <h2>Welcome to Time Log!</h2>
             <TimeCard />
         </main>
     );
