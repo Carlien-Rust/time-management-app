@@ -1,7 +1,3 @@
-/*
-base endpoint = header + authtoken + some validation (if token exists fine, if not exist problemo)
-base_url = some url
-*/
 import axios from 'axios';
 //import { getAuth } from 'firebase/auth';
 
@@ -12,7 +8,6 @@ const apiClient = axios.create({
   },
 });
 
-// Automatically add token to headers for every request
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('authtoken'); // or your state mgmt
   if (token) {

@@ -210,17 +210,25 @@ export default defineConfig([
 - Not found pages, error messages (which ones to include)
 6) Routing
 - using $id and structure for tree to render and pass information correctly
+7) API
+- https://axios-http.com/docs/intro
 
+- apiClient
+```
+/*
+base endpoint = header + authtoken + some validation (if token exists fine, if not exist problemo)
+base_url = some url
+*/
+```
+- Service
+```
+Login = base endpoint {
+    base url + "/login"
+    method: "post"
+    + request body 
+    {
+  "email": "string",
+  "password": "string"
+```
 
-
-      const url = import.meta.env.VITE_API_URL;
-      const idToken = await response.user.getIdToken();
-      fetch(url,{
-        method: "GET",
-        headers: {
-          'Authorization': `Bearer ${idToken}`,
-        }
-      }); 
-
-https://if6zo43awg.execute-api.af-south-1.amazonaws.com/dev/docs#/Projects/ProjectsController_createProject
 Swagger: https://if6zo43awg.execute-api.af-south-1.amazonaws.com/dev/docs#/Projects/ProjectsController_createProject/docs/dev
