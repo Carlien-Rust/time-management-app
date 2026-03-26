@@ -1,7 +1,7 @@
 /*
 TimeLogs API 
 
-GET /time-entries/project/{projectId}
+GET /time-entries/project/{projectId} 
 send
 {
     projectId
@@ -38,24 +38,24 @@ return
 POST /time-entries
 send
 {
-  "projectId": "string",
-  "userId": "string",
-  "date": "string",
-  "hours": 0,
-  "minutes": 0,
-  "notes": "string"
+    "projectId": "string",
+    "userId": "string",
+    "date": "string",
+    "hours": 0,
+    "minutes": 0,
+    "notes": "string"
 }
 return
 {
-  "id": "string",
-  "projectId": "string",
-  "userId": "string",
-  "date": "string",
-  "hours": 0,
-  "minutes": 0,
-  "notes": "string",
-  "createdAt": "2026-03-26T12:19:54.901Z",
-  "updatedAt": "2026-03-26T12:19:54.901Z"
+    "id": "string",
+    "projectId": "string",
+    "userId": "string",
+    "date": "string",
+    "hours": 0,
+    "minutes": 0,
+    "notes": "string",
+    "createdAt": "2026-03-26T12:19:54.901Z",
+    "updatedAt": "2026-03-26T12:19:54.901Z"
 }
 PATCH /time-entries/{id}
 send
@@ -64,11 +64,11 @@ send
 }
 return
 {
-  "projectId": "string",
-  "date": "string",
-  "hours": 0,
-  "minutes": 0,
-  "notes": "string"
+    "projectId": "string",
+    "date": "string",
+    "hours": 0,
+    "minutes": 0,
+    "notes": "string"
 }
 DELETE /time-entries/{id}
 send

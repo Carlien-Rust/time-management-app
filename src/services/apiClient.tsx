@@ -1,5 +1,5 @@
 import axios from 'axios';
-//import { getAuth } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -8,23 +8,25 @@ const apiClient = axios.create({
   },
 });
 
-apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authtoken'); // or your state mgmt
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+apiClient.interceptors.request.use(async (config) => {
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+
+      const idToken = await user.getIdToken();
+      
+      console.log("Adding Token to Header...");
+      config.headers.Authorization = `Bearer ${idToken}`;
+    }
+  } catch (error) {
+    console.error("Failed to get Firebase token:", error);
   }
+
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
-
-// apiClient.interceptors.request.use(async (config) => {
-//   const auth = getAuth();
-//   const user = auth.currentUser;
-
-//   if (user) {
-//     const token = await user.getIdToken(); // This refreshes the token if expired!
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
 
 export default apiClient;

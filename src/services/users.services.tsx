@@ -42,7 +42,7 @@ return
     "createdAt": "2026-03-26T10:52:05.382Z",
     "updatedAt": "2026-03-26T10:52:05.382Z"
 }
--> Hook: useGetUser
+-> Hook: useGetUsers
 
 */
 import apiClient from './apiClient';

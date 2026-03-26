@@ -20,13 +20,14 @@ import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Box
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from "../../services/navigationManager";
-import { useAuth } from '../../services/auth_services/AuthProvider';
+import { usePostAuth } from '../../hooks/usePostAuth';
 
 const defaultTheme = createTheme();
 
 export default function LoginPage() {
-  const { handleRegister, handleReset, handleClickOverview } = useNavigationManager(); 
-  const { login } = useAuth();
+  const { handleRegister, handleReset, handleClickOverview } = useNavigationManager();
+  const loginMutation = usePostAuth();
+
 
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -45,86 +46,89 @@ export default function LoginPage() {
       return;
     }
 
-    try
-    {
+    try {
       setLoading(true);
-      login(email, password);
-     
-    } catch (error: any) {
-      setLoading(false);
-      if (error.code === 'auth/user-not-found') {
-        setError("No account found with this email. Redirecting to sign up?");
-      } else if (error.code === 'auth/wrong-password') {
-        setError("Incorrect password. Please try again.");
-      } else {
-        setError("Failed to sign in. Check your credentials.");
-      }
-    }
-  };
+      await loginMutation.mutateAsync({ email, password }).then(() => {
+        handleClickOverview();
+        setLoading(false)
+      });
 
-  return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={loading}
-              onClick={handleClickOverview}
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </Button>
-            <Button onClick={handleReset} fullWidth variant="text">
-              Forgot password?
-            </Button>
-            <Button onClick={handleRegister} fullWidth variant="text">
-              Don't have an account? Sign Up
-            </Button>
-          </Box>
+    }
+     
+    catch (error: any) {
+    setLoading(false);
+    if (error.code === 'auth/user-not-found') {
+      setError("No account found with this email. Redirecting to sign up?");
+    } else if (error.code === 'auth/wrong-password') {
+      setError("Incorrect password. Please try again.");
+    } else {
+      setError("Failed to sign in. Check your credentials.");
+    }
+  }
+};
+
+return (
+  <ThemeProvider theme={defaultTheme}>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email Address"
+            name="email"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loading}
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </Button>
+          <Button onClick={handleReset} fullWidth variant="text">
+            Forgot password?
+          </Button>
+          <Button onClick={handleRegister} fullWidth variant="text">
+            Don't have an account? Sign Up
+          </Button>
         </Box>
-      </Container>
-    </ThemeProvider>
-  );
+      </Box>
+    </Container>
+  </ThemeProvider>
+);
 }

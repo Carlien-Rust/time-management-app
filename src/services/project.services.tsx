@@ -60,7 +60,7 @@ import apiClient from './apiClient';
 import { z } from "zod";
 
 export const ProjectService = {
-    getProject: async (userId: string): Promise<Project[]> => {
+    getProjects: async (userId: string): Promise<Project[]> => {
         const response = await apiClient.get<ProjectApiResponse<Project[]>>(`/projects/user/${userId}`);
         return z.array(ProjectSchema).parse(response.data.data);
     },

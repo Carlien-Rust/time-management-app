@@ -212,6 +212,7 @@ export default defineConfig([
 - using $id and structure for tree to render and pass information correctly
 7) API
 - https://axios-http.com/docs/intro
+- TanStack Query, useQuery is for Reading (GET). useMutation is for Writing or Acting (POST/PATCH/DELETE)
 
 - apiClient
 ```

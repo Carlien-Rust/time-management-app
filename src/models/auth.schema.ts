@@ -1,12 +1,15 @@
 /*
-AuthDTo {
-  "email": "string",
-  "password": "string"
+return
+{
+  "idToken": "string",
+  "refreshToken": "string",
+  "expiresIn": "string"
 }
 */
 import { z } from 'zod';
 
 export const AuthSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
+  idToken: z.string(),
+  refreshToken: z.string(),
+  expiresIn: z.string(),
 });
