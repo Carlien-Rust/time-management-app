@@ -1,8 +1,8 @@
 /*
-Add new project
+Edit project 
 Include project name, project duration (start/end), overview of single project
 
-Need to add API call to create project
+Hook: usePostProjects();
 
 -- Clickup ticket
 Update name, save; card text updates without page reload.
@@ -12,7 +12,7 @@ import * as React from 'react';
 import {Box, Typography, Modal, TextField , Button, Alert } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
-import { useGetProjectsById } from "../hooks/useGetIds";
+import { usePatchProjects } from "../hooks/usePatchProject"; 
 
 const style = {
   position: 'absolute',
@@ -30,8 +30,15 @@ export default function EditProject() {
     const [loading, setLoading] = React.useState(false);
 
     const params = useParams({ strict: false });
-    const id = params?.id;
-    const { data: projectEntry, isLoading, isError, refetch } = useGetProjectsById(id);
+    const { id, projectId } = params;
+    const patchMutation = usePatchProjects();
+
+    const handleUpdate = async () => {
+        await patchMutation.mutateAsync({
+            projectId, 
+            payload: {name, description}
+        });
+    };
 
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -41,16 +48,14 @@ export default function EditProject() {
 
         const formData = new FormData(event.currentTarget);
         const projectData = {
-            name: formData.get('project_name'),
-            startDate: formData.get('start_date'),
-            endDate: formData.get('end_date'),
-            durationDays: formData.get('durationDays'),
-            summary: formData.get('summary'),
+            projectId: projectId,
+            name: formData.get('name'),
+            description: formData.get('description'),
         };
 
         try {
             console.log("Saving to Firebase:", projectData);
-            // await createProject(projectData); // Your Firebase service call
+            handleUpdate();
             setLoading(false);
 
         } catch (err: any) {
@@ -78,51 +83,21 @@ export default function EditProject() {
                     margin="normal"
                     required
                     fullWidth
-                    id="project_name"
+                    id="name"
                     label="Project Name"
-                    name="project_name"
-                    defaultValue={projectEntry?.name}
+                    name="name"
+                    //defaultValue={projectEntry?.name}
                     autoFocus
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="start_date"
-                    label="Start Date"
-                    type="date"
-                    id="start_date"
-                    defaultValue={projectEntry?.startDate}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="end_date"
-                    label="End Date"
-                    type="date"
-                    id="end_date"
-                    defaultValue={projectEntry?.endDate}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="durationDays"
-                    label="Duration in days"
-                    type="number"
-                    id="durationDays"
-                    defaultValue={projectEntry?.durationDays}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="summary"
+                    name="description"
                     label="Project Overview"
                     type="text"
-                    id="summary"
-                    defaultValue={projectEntry?.summary}
+                    id="description"
+                    // defaultValue={projectEntry?.description}
                 />
                 <Button 
                     variant="contained" 

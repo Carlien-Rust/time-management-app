@@ -8,7 +8,7 @@ export const usePatchProjects = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ projectId, payload }: {projectId: string, payload: { name?: string; description?: string }}) => ProjectService.patchProject(projectId, payload),
+        mutationFn: ({ projectId, payload }: {projectId: string, payload: { name: string; description: string }}) => ProjectService.patchProject(projectId, payload),
         onSuccess: (data: Project) => {
             console.log("Updated project successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });

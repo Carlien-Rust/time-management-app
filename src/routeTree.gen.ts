@@ -16,11 +16,11 @@ import { Route as NewProjectRouteImport } from './routes/new-project'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProjectIdRouteImport } from './routes/project/$id'
-import { Route as ProjectIdEditProjectRouteImport } from './routes/project/$id/edit-project'
-import { Route as ProjectIdAddTimeRouteImport } from './routes/project/$id/add-time'
-import { Route as ProjectIdLogIdEditTimeRouteImport } from './routes/project/$id/$logId/edit-time'
-import { Route as ProjectIdLogIdAddNewTimeRouteImport } from './routes/project/$id/$logId/add-new-time'
+import { Route as UserIdProjectIdRouteImport } from './routes/$userId/$projectId'
+import { Route as UserIdProjectIdEditProjectRouteImport } from './routes/$userId/$projectId/edit-project'
+import { Route as UserIdProjectIdAddTimeRouteImport } from './routes/$userId/$projectId/add-time'
+import { Route as UserIdProjectIdLogIdEditTimeRouteImport } from './routes/$userId/$projectId/$logId/edit-time'
+import { Route as UserIdProjectIdLogIdAddNewTimeRouteImport } from './routes/$userId/$projectId/$logId/add-new-time'
 
 const ResetRoute = ResetRouteImport.update({
   id: '/reset',
@@ -57,31 +57,33 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectIdRoute = ProjectIdRouteImport.update({
-  id: '/project/$id',
-  path: '/project/$id',
+const UserIdProjectIdRoute = UserIdProjectIdRouteImport.update({
+  id: '/$userId/$projectId',
+  path: '/$userId/$projectId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectIdEditProjectRoute = ProjectIdEditProjectRouteImport.update({
-  id: '/edit-project',
-  path: '/edit-project',
-  getParentRoute: () => ProjectIdRoute,
-} as any)
-const ProjectIdAddTimeRoute = ProjectIdAddTimeRouteImport.update({
+const UserIdProjectIdEditProjectRoute =
+  UserIdProjectIdEditProjectRouteImport.update({
+    id: '/edit-project',
+    path: '/edit-project',
+    getParentRoute: () => UserIdProjectIdRoute,
+  } as any)
+const UserIdProjectIdAddTimeRoute = UserIdProjectIdAddTimeRouteImport.update({
   id: '/add-time',
   path: '/add-time',
-  getParentRoute: () => ProjectIdRoute,
+  getParentRoute: () => UserIdProjectIdRoute,
 } as any)
-const ProjectIdLogIdEditTimeRoute = ProjectIdLogIdEditTimeRouteImport.update({
-  id: '/$logId/edit-time',
-  path: '/$logId/edit-time',
-  getParentRoute: () => ProjectIdRoute,
-} as any)
-const ProjectIdLogIdAddNewTimeRoute =
-  ProjectIdLogIdAddNewTimeRouteImport.update({
+const UserIdProjectIdLogIdEditTimeRoute =
+  UserIdProjectIdLogIdEditTimeRouteImport.update({
+    id: '/$logId/edit-time',
+    path: '/$logId/edit-time',
+    getParentRoute: () => UserIdProjectIdRoute,
+  } as any)
+const UserIdProjectIdLogIdAddNewTimeRoute =
+  UserIdProjectIdLogIdAddNewTimeRouteImport.update({
     id: '/$logId/add-new-time',
     path: '/$logId/add-new-time',
-    getParentRoute: () => ProjectIdRoute,
+    getParentRoute: () => UserIdProjectIdRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -92,11 +94,11 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/reset': typeof ResetRoute
-  '/project/$id': typeof ProjectIdRouteWithChildren
-  '/project/$id/add-time': typeof ProjectIdAddTimeRoute
-  '/project/$id/edit-project': typeof ProjectIdEditProjectRoute
-  '/project/$id/$logId/add-new-time': typeof ProjectIdLogIdAddNewTimeRoute
-  '/project/$id/$logId/edit-time': typeof ProjectIdLogIdEditTimeRoute
+  '/$userId/$projectId': typeof UserIdProjectIdRouteWithChildren
+  '/$userId/$projectId/add-time': typeof UserIdProjectIdAddTimeRoute
+  '/$userId/$projectId/edit-project': typeof UserIdProjectIdEditProjectRoute
+  '/$userId/$projectId/$logId/add-new-time': typeof UserIdProjectIdLogIdAddNewTimeRoute
+  '/$userId/$projectId/$logId/edit-time': typeof UserIdProjectIdLogIdEditTimeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -106,11 +108,11 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/reset': typeof ResetRoute
-  '/project/$id': typeof ProjectIdRouteWithChildren
-  '/project/$id/add-time': typeof ProjectIdAddTimeRoute
-  '/project/$id/edit-project': typeof ProjectIdEditProjectRoute
-  '/project/$id/$logId/add-new-time': typeof ProjectIdLogIdAddNewTimeRoute
-  '/project/$id/$logId/edit-time': typeof ProjectIdLogIdEditTimeRoute
+  '/$userId/$projectId': typeof UserIdProjectIdRouteWithChildren
+  '/$userId/$projectId/add-time': typeof UserIdProjectIdAddTimeRoute
+  '/$userId/$projectId/edit-project': typeof UserIdProjectIdEditProjectRoute
+  '/$userId/$projectId/$logId/add-new-time': typeof UserIdProjectIdLogIdAddNewTimeRoute
+  '/$userId/$projectId/$logId/edit-time': typeof UserIdProjectIdLogIdEditTimeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -121,11 +123,11 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/reset': typeof ResetRoute
-  '/project/$id': typeof ProjectIdRouteWithChildren
-  '/project/$id/add-time': typeof ProjectIdAddTimeRoute
-  '/project/$id/edit-project': typeof ProjectIdEditProjectRoute
-  '/project/$id/$logId/add-new-time': typeof ProjectIdLogIdAddNewTimeRoute
-  '/project/$id/$logId/edit-time': typeof ProjectIdLogIdEditTimeRoute
+  '/$userId/$projectId': typeof UserIdProjectIdRouteWithChildren
+  '/$userId/$projectId/add-time': typeof UserIdProjectIdAddTimeRoute
+  '/$userId/$projectId/edit-project': typeof UserIdProjectIdEditProjectRoute
+  '/$userId/$projectId/$logId/add-new-time': typeof UserIdProjectIdLogIdAddNewTimeRoute
+  '/$userId/$projectId/$logId/edit-time': typeof UserIdProjectIdLogIdEditTimeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -137,11 +139,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/reset'
-    | '/project/$id'
-    | '/project/$id/add-time'
-    | '/project/$id/edit-project'
-    | '/project/$id/$logId/add-new-time'
-    | '/project/$id/$logId/edit-time'
+    | '/$userId/$projectId'
+    | '/$userId/$projectId/add-time'
+    | '/$userId/$projectId/edit-project'
+    | '/$userId/$projectId/$logId/add-new-time'
+    | '/$userId/$projectId/$logId/edit-time'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -151,11 +153,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/reset'
-    | '/project/$id'
-    | '/project/$id/add-time'
-    | '/project/$id/edit-project'
-    | '/project/$id/$logId/add-new-time'
-    | '/project/$id/$logId/edit-time'
+    | '/$userId/$projectId'
+    | '/$userId/$projectId/add-time'
+    | '/$userId/$projectId/edit-project'
+    | '/$userId/$projectId/$logId/add-new-time'
+    | '/$userId/$projectId/$logId/edit-time'
   id:
     | '__root__'
     | '/'
@@ -165,11 +167,11 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/reset'
-    | '/project/$id'
-    | '/project/$id/add-time'
-    | '/project/$id/edit-project'
-    | '/project/$id/$logId/add-new-time'
-    | '/project/$id/$logId/edit-time'
+    | '/$userId/$projectId'
+    | '/$userId/$projectId/add-time'
+    | '/$userId/$projectId/edit-project'
+    | '/$userId/$projectId/$logId/add-new-time'
+    | '/$userId/$projectId/$logId/edit-time'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -180,7 +182,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   ResetRoute: typeof ResetRoute
-  ProjectIdRoute: typeof ProjectIdRouteWithChildren
+  UserIdProjectIdRoute: typeof UserIdProjectIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -234,60 +236,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/project/$id': {
-      id: '/project/$id'
-      path: '/project/$id'
-      fullPath: '/project/$id'
-      preLoaderRoute: typeof ProjectIdRouteImport
+    '/$userId/$projectId': {
+      id: '/$userId/$projectId'
+      path: '/$userId/$projectId'
+      fullPath: '/$userId/$projectId'
+      preLoaderRoute: typeof UserIdProjectIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/project/$id/edit-project': {
-      id: '/project/$id/edit-project'
+    '/$userId/$projectId/edit-project': {
+      id: '/$userId/$projectId/edit-project'
       path: '/edit-project'
-      fullPath: '/project/$id/edit-project'
-      preLoaderRoute: typeof ProjectIdEditProjectRouteImport
-      parentRoute: typeof ProjectIdRoute
+      fullPath: '/$userId/$projectId/edit-project'
+      preLoaderRoute: typeof UserIdProjectIdEditProjectRouteImport
+      parentRoute: typeof UserIdProjectIdRoute
     }
-    '/project/$id/add-time': {
-      id: '/project/$id/add-time'
+    '/$userId/$projectId/add-time': {
+      id: '/$userId/$projectId/add-time'
       path: '/add-time'
-      fullPath: '/project/$id/add-time'
-      preLoaderRoute: typeof ProjectIdAddTimeRouteImport
-      parentRoute: typeof ProjectIdRoute
+      fullPath: '/$userId/$projectId/add-time'
+      preLoaderRoute: typeof UserIdProjectIdAddTimeRouteImport
+      parentRoute: typeof UserIdProjectIdRoute
     }
-    '/project/$id/$logId/edit-time': {
-      id: '/project/$id/$logId/edit-time'
+    '/$userId/$projectId/$logId/edit-time': {
+      id: '/$userId/$projectId/$logId/edit-time'
       path: '/$logId/edit-time'
-      fullPath: '/project/$id/$logId/edit-time'
-      preLoaderRoute: typeof ProjectIdLogIdEditTimeRouteImport
-      parentRoute: typeof ProjectIdRoute
+      fullPath: '/$userId/$projectId/$logId/edit-time'
+      preLoaderRoute: typeof UserIdProjectIdLogIdEditTimeRouteImport
+      parentRoute: typeof UserIdProjectIdRoute
     }
-    '/project/$id/$logId/add-new-time': {
-      id: '/project/$id/$logId/add-new-time'
+    '/$userId/$projectId/$logId/add-new-time': {
+      id: '/$userId/$projectId/$logId/add-new-time'
       path: '/$logId/add-new-time'
-      fullPath: '/project/$id/$logId/add-new-time'
-      preLoaderRoute: typeof ProjectIdLogIdAddNewTimeRouteImport
-      parentRoute: typeof ProjectIdRoute
+      fullPath: '/$userId/$projectId/$logId/add-new-time'
+      preLoaderRoute: typeof UserIdProjectIdLogIdAddNewTimeRouteImport
+      parentRoute: typeof UserIdProjectIdRoute
     }
   }
 }
 
-interface ProjectIdRouteChildren {
-  ProjectIdAddTimeRoute: typeof ProjectIdAddTimeRoute
-  ProjectIdEditProjectRoute: typeof ProjectIdEditProjectRoute
-  ProjectIdLogIdAddNewTimeRoute: typeof ProjectIdLogIdAddNewTimeRoute
-  ProjectIdLogIdEditTimeRoute: typeof ProjectIdLogIdEditTimeRoute
+interface UserIdProjectIdRouteChildren {
+  UserIdProjectIdAddTimeRoute: typeof UserIdProjectIdAddTimeRoute
+  UserIdProjectIdEditProjectRoute: typeof UserIdProjectIdEditProjectRoute
+  UserIdProjectIdLogIdAddNewTimeRoute: typeof UserIdProjectIdLogIdAddNewTimeRoute
+  UserIdProjectIdLogIdEditTimeRoute: typeof UserIdProjectIdLogIdEditTimeRoute
 }
 
-const ProjectIdRouteChildren: ProjectIdRouteChildren = {
-  ProjectIdAddTimeRoute: ProjectIdAddTimeRoute,
-  ProjectIdEditProjectRoute: ProjectIdEditProjectRoute,
-  ProjectIdLogIdAddNewTimeRoute: ProjectIdLogIdAddNewTimeRoute,
-  ProjectIdLogIdEditTimeRoute: ProjectIdLogIdEditTimeRoute,
+const UserIdProjectIdRouteChildren: UserIdProjectIdRouteChildren = {
+  UserIdProjectIdAddTimeRoute: UserIdProjectIdAddTimeRoute,
+  UserIdProjectIdEditProjectRoute: UserIdProjectIdEditProjectRoute,
+  UserIdProjectIdLogIdAddNewTimeRoute: UserIdProjectIdLogIdAddNewTimeRoute,
+  UserIdProjectIdLogIdEditTimeRoute: UserIdProjectIdLogIdEditTimeRoute,
 }
 
-const ProjectIdRouteWithChildren = ProjectIdRoute._addFileChildren(
-  ProjectIdRouteChildren,
+const UserIdProjectIdRouteWithChildren = UserIdProjectIdRoute._addFileChildren(
+  UserIdProjectIdRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -298,7 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   ResetRoute: ResetRoute,
-  ProjectIdRoute: ProjectIdRouteWithChildren,
+  UserIdProjectIdRoute: UserIdProjectIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -9,18 +9,22 @@ On fetch error: alert banner with retry.
 */
 
 import * as React from 'react';
+import { useParams } from "@tanstack/react-router";
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip, Typography } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useNavigationManager } from '../services/navigationManager';
+import { useDeleteTimeLogs } from "../hooks/useDeleteTimeLogs";
 
 interface TimeLog {
-  logId: string;
+  id: string;
   projectId: string;
+  userId: string;
   date: string;
-  startTime: string;
-  endTime: string;
-  durationHours: number;
-  description: string;
+  hours: string;
+  minutes: string;
+  notes: string;
+  createdAt: string,
+  updatedAt: string,
 }
 
 interface TimeLogTableProps {
@@ -28,8 +32,15 @@ interface TimeLogTableProps {
   projectId: string;
 }
 
-export default function TimeLogTable({ logs, projectId }: TimeLogTableProps) {
+export default function TimeLogTable({ logs }: TimeLogTableProps) {
   const { handleEditTime } = useNavigationManager();
+  const params = useParams({ strict: false });
+  const { id, projectId } = params;
+
+  const deleteMutation = useDeleteTimeLogs();
+  const handleDelete = async () => {
+        await deleteMutation.mutateAsync(id);
+  };
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -41,28 +52,31 @@ export default function TimeLogTable({ logs, projectId }: TimeLogTableProps) {
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
             <TableHead>
               <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Start</TableCell>
-                <TableCell align="right">End</TableCell>
+                <TableCell>ID</TableCell>
+                <TableCell>Project ID</TableCell>
+                <TableCell>User ID</TableCell>
+                <TableCell align="right">Date</TableCell>
                 <TableCell align="right">Hours</TableCell>
+                <TableCell align="right">Minutes</TableCell>
+                <TableCell>Notes</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {logs.map((row) => (
-                <TableRow hover key={row.logId}>
+                <TableRow hover key={row.id}>
+                  <TableCell>{row.projectId}</TableCell>
+                  <TableCell>{row.userId}</TableCell>
                   <TableCell component="th" scope="row">{row.date}</TableCell>
-                  <TableCell>{row.description}</TableCell>
-                  <TableCell align="right">{row.startTime}</TableCell>
-                  <TableCell align="right">{row.endTime}</TableCell>
-                  <TableCell align="right">{row.durationHours}</TableCell>
+                  <TableCell align="right">{row.hours}</TableCell>
+                  <TableCell align="right">{row.minutes}</TableCell>
+                  <TableCell>{row.notes}</TableCell>
                   
                   {/* ACTIONS COLUMN */}
                   <TableCell align="center">
                     <Tooltip title="Edit Entry">
                       <IconButton 
-                        onClick={() => handleEditTime(projectId, row.logId)}
+                        onClick={() => handleEditTime(projectId, row.id)}
                         size="small"
                         color="primary"
                       >
@@ -73,7 +87,7 @@ export default function TimeLogTable({ logs, projectId }: TimeLogTableProps) {
                       <IconButton 
                         size="small" 
                         color="error"
-                        onClick={() => console.log("Trigger Delete for:", row.logId)}
+                        onClick={handleDelete}
                       >
                         <Delete fontSize="small" />
                       </IconButton>

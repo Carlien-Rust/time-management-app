@@ -1,8 +1,8 @@
 /*
-Add new project
+Add new project 
 Include project name, project duration (start/end), overview of single project
 
-Need to add API call to create project
+Hook: usePostProjects();
 
 -- Clickup ticket
 “New Entry” Modal (Project, Date, Duration, Notes) with validation. Creates and updates using API
@@ -11,6 +11,8 @@ Need to add API call to create project
 import * as React from 'react';
 import {Box, Typography, Modal, TextField , Button, Alert} from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
+import { usePostProjects } from "../hooks/usePostProjects";
+import { useParams } from "@tanstack/react-router";
 
 const style = {
   position: 'absolute',
@@ -27,6 +29,10 @@ export default function AddProject() {
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
 
+    const params = useParams({ strict: false });
+    const userId = params?.userId;
+    const postMutation = usePostProjects();
+
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -34,16 +40,14 @@ export default function AddProject() {
 
         const formData = new FormData(event.currentTarget);
         const projectData = {
-            name: formData.get('project_name'),
-            startDate: formData.get('start_date'),
-            endDate: formData.get('end_date'),
-            durationDays: formData.get('durationDays'),
-            summary: formData.get('summary'),
+            name: formData.get('name'),
+            userId: userId,
+            description: formData.get('description'),
         };
 
         try {
             console.log("Saving to Firebase:", projectData);
-            // await createProject(projectData); // Your Firebase service call
+            await postMutation.mutateAsync({ name, userId, description });
             
             setLoading(false);
             handleClickOverview();
@@ -69,46 +73,30 @@ export default function AddProject() {
                     margin="normal"
                     required
                     fullWidth
-                    id="project_name"
+                    id="name"
                     label="Project Name"
-                    name="project_name"
+                    name="name"
                     autoFocus
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="start_date"
-                    label="Start Date"
-                    type="date"
-                    id="start_date"
+                    name="userId"
+                    label="User Id"
+                    type="string"
+                    id="userId"
+                    value={userId}
+                    disabled
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="end_date"
-                    label="End Date"
-                    type="date"
-                    id="end_date"
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="durationDays"
-                    label="Duration in days"
-                    type="number"
-                    id="durationDays"
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="summary"
+                    name="description"
                     label="Project Overview"
                     type="text"
-                    id="summary"
+                    id="description"
                 />
                 <Button 
                     type="button"

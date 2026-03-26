@@ -1,5 +1,8 @@
 /*
--- Clickup ticket
+
+Hooks: usePostTimeLogs();
+
+-- Clickup ticket 
 Successful create closes modal, adds new card instantly.
 Form fields validated. 
 */
@@ -8,6 +11,7 @@ import * as React from 'react';
 import {Box, Typography, Modal, TextField , Button, Alert} from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
 import { useParams } from "@tanstack/react-router";
+import { usePostTimeLogs } from "../hooks/usePostTimeLogs";
 
 const style = {
   position: 'absolute',
@@ -25,8 +29,14 @@ export default function AddTimeLog() {
     const [loading, setLoading] = React.useState(false);
 
     const params = useParams({ strict: false });
-    const id = params?.id; // This is the Project ID from the URL
-    console.log(`ID incoming: ${id}`);
+    const { id, userId, projectId} = params;
+    const postMutation = usePostTimeLogs();
+
+    const handleAddLog = async () => {
+        await postMutation.mutateAsync({ 
+            projectId, userId, date, hours, minutes, notes  
+        });
+    };
 
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -37,16 +47,16 @@ export default function AddTimeLog() {
 
         const timeData = {
             projectId: id,
+            userId: userId,
             date: formData.get('date'),
-            startTime: formData.get('start_time'),
-            endTime: formData.get('end_time'),
-            durationHours: Number(formData.get('durationHours')),
-            description: formData.get('description'),
+            hours: Number(formData.get('hours')),
+            minutes: Number(formData.get('minutes')),
+            notes: formData.get('notes'),
         };
 
         try {
             console.log("Saving to Firebase:", timeData);
-            // await createTimeLog(timeData); // Your Firebase service call
+            handleAddLog;
             setLoading(false);
 
         } catch (err: any) {
@@ -73,47 +83,47 @@ export default function AddTimeLog() {
                 <TextField
                     margin="normal"
                     fullWidth
-                    id="project_id"
+                    id="projectId"
                     label="Project ID"
-                    name="project_id"
-                    value={id}
+                    name="projectId"
+                    value={projectId}
                     disabled
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="start_time"
-                    label="Start Time"
-                    type="time"
-                    id="start_time"
+                    name="date"
+                    label="Date"
+                    type="date"
+                    id="date"
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="end_time"
-                    label="End Time"
-                    type="time"
-                    id="end_time"
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="durationHours"
-                    label="Duration in hours"
+                    name="hours"
+                    label="Hours"
                     type="number"
-                    id="durationHours"
+                    id="hours"
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="description"
-                    label="Description"
+                    name="minutes"
+                    label="Minutes"
+                    type="number"
+                    id="minutes"
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="notes"
+                    label="Notes"
                     type="text"
-                    id="description"
+                    id="notes"
                 />
                 <Button 
                     type="button"

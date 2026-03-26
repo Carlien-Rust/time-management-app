@@ -13,18 +13,19 @@ Active styling – The currently selected route is visually distinct (e.g., bold
 import "../styles/Sidebar.css";
 import { Box, Drawer, Divider, Toolbar, List, ListItemText, ListItemButton  } from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
-import { useGetProjects } from "../hooks/useGetIds";
+import { useGetProjects } from "../hooks/useGetProjects"; 
 import { useParams } from "@tanstack/react-router";
 
 const drawerWidth = 120;
 
 export default function Sidebar() {
   const { handleClickOverview, handleAddProject, handleClickProject } = useNavigationManager();
-  const { data: projects, isLoading, isError, refetch } = useGetProjects(); 
   
   // Use params just to "highlight" which one is active
   const params = useParams({ strict: false });
-  const currentId = params.id;
+  const userId = params.userId;
+
+  const { data: projects, isLoading, isError, refetch } = useGetProjects(userId); 
 
   return (
     <Box>
@@ -37,7 +38,7 @@ export default function Sidebar() {
             <ListItemText primary="Add new project" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleClickOverview} selected={!currentId}>
+          <ListItemButton onClick={handleClickOverview} selected={!userId}>
             <ListItemText primary="Overview" />
           </ListItemButton>
 
@@ -51,7 +52,7 @@ export default function Sidebar() {
               <ListItemButton 
                 key={project.id} 
                 onClick={() => handleClickProject(project.id)}
-                selected={currentId === project.id}
+                selected={userId === project.id}
               >
                 <ListItemText primary={project.name} />
               </ListItemButton>

@@ -1,3 +1,4 @@
+TODO SIDEBAR
 
 ## Auth/Login
 
@@ -10,7 +11,6 @@ const loginMutation = usePostAuth();
 ...
 await loginMutation.mutateAsync({ email, password }).then(() => {
         handleClickOverview();
-        setLoading(false)
       });
 ```
 
@@ -25,7 +25,6 @@ const postMutation = usePostUser();
 ...
 await postMutation.mutateAsync({ userId, name, email }).then(() => {
         handleClickOverview();
-        setLoading(false)
       });
 ```
 
@@ -34,6 +33,10 @@ useGetUsers();
 
 ```
 import { useGetUsers, useGetUserById } from "../hooks/useGetUsers"; 
+import { useParams } from "@tanstack/react-router";
+
+const params = useParams({ strict: false });
+const id = params?.id;
 
 const {data: usersData , isLoading, isError} = useGetUsers();
 const {data: usersData , isLoading, isError} = useGetUserById(id);
@@ -42,16 +45,20 @@ const {data: usersData , isLoading, isError} = useGetUserById(id);
 
 ## Projects
 
-useGetProjects(userId);
+useGetProjects(userId); - ProjectCard
 
 ```
 import { useGetProjects } from "../hooks/useGetProjects"; 
+import { useParams } from "@tanstack/react-router";
+
+const params = useParams({ strict: false });
+const userId = params?.userId;
 
 const {data: projectsData , isLoading, isError} = useGetProjects(userId);
 
 ```
 
-usePostProjects();
+usePostProjects(); - NewProjectModal
 
 ```
 import { usePostProjects } from "../hooks/usePostProjects"; 
@@ -60,44 +67,49 @@ const postMutation = usePostProjects();
 ...
 await postMutation.mutateAsync({ name, userId, description }).then(() => {
         handleClickOverview();
-        setLoading(false)
       });
 ```
 
-useDeleteProject();
+useDeleteProject(); - ProjectCard
 
 ```
 import { useDeleteProject } from "../hooks/useDeleteProject"; 
 
 const deleteMutation = useDeleteProject();
 ...
-await deleteMutation.mutateAsync(projectId).then(() => {
-        handleClickOverview();
-        setLoading(false)
-      });
+const handleDelete = async () => {
+  await deleteMutation.mutateAsync(projectId);
+};
 ```
 
-usePatchProjects();
+usePatchProjects(); - EditProjectModal
 
 ```
 import { usePatchProjects } from "../hooks/usePatchProjects"; 
 
 const patchMutation = usePatchProjects();
 ...
-await patchMutation.mutateAsync(projectId, {name, description}).then(() => {
-        handleClickOverview();
-        setLoading(false)
-      });
+const handleUpdate = async () => {
+  await patchMutation.mutateAsync({
+    projectId, 
+    payload: {name, description}
+  });
+};
+
 ```
 
 ## Time Logs
 
-useGetTimeLogsByProjectId(projectId);
+useGetTimeLogsByProjectId(projectId); - TimeCard
 
 ```
 import { useGetTimeLogsByProjectId } from "../hooks/useGetTimeLogsByProjectId"; 
+import { useParams } from "@tanstack/react-router";
 
-const {data: projectsData , isLoading, isError} = useGetTimeLogsByProjectId(projectId);
+const params = useParams({ strict: false });
+const projectId = params?.projectId;
+
+const {data: timeData , isLoading, isError} = useGetTimeLogsByProjectId(projectId);
 
 ```
 
@@ -105,25 +117,31 @@ useGetTimeLogsByUserId(userId):
 
 ```
 import { useGetTimeLogsByUserId } from "../hooks/useGetTimeLogsByUserId"; 
+import { useParams } from "@tanstack/react-router";
 
-const {data: projectsData , isLoading, isError} = useGetTimeLogsByUserId(userId);
+const params = useParams({ strict: false });
+const userId = params?.userId;
+
+const {data: timeData , isLoading, isError} = useGetTimeLogsByUserId(userId);
 
 ```
 
-usePostTimeLogs();
+usePostTimeLogs(); - NewTimeLogModal
 
 ```
 import { usePostTimeLogs } from "../hooks/usePostTimeLogs"; 
 
 const postMutation = usePostTimeLogs();
 ...
-await postMutation.mutateAsync({ projectId, userId, date, hours, minutes, notes  }).then(() => {
-        handleClickOverview();
-        setLoading(false)
-      });
+const handleAddLog = async () => {
+  await postMutation.mutateAsync({ 
+    projectId, userId, date, hours, minutes, notes  
+  });
+};
+
 ```
 
-useDeleteTimeLogs();
+useDeleteTimeLogs(); - TimeLogTable
 
 ```
 import { useDeleteTimeLogs } from "../hooks/useDeleteTimeLogs"; 
@@ -132,19 +150,21 @@ const deleteMutation = useDeleteTimeLogs();
 ...
 await deleteMutation.mutateAsync(id).then(() => {
         handleClickOverview();
-        setLoading(false)
       });
 ```
 
-usePatchTimeLogs();
+usePatchTimeLogs(); - EditTimeLogModal
 
 ```
 import { usePatchTimeLogs } from "../hooks/usePatchTimeLogs"; 
 
 const patchMutation = usePatchTimeLogs();
 ...
-await patchMutation.mutateAsync(id, { projectId, date, hours, minutes, notes }).then(() => {
-        handleClickOverview();
-        setLoading(false)
-      });
+const handleUpdateLog = async () => {
+  await patchMutation.mutateAsync({
+    id, 
+    payload: { projectId, date, hours, minutes, notes }
+  });
+};
+
 ```

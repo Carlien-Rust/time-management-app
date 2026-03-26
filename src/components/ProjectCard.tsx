@@ -6,6 +6,7 @@ Link to "Edit project details" and "Log time entry" modals
 Called by Project Page
 
 routes for projects: `/project/${id}/edit-project` and `/project/${id}/add-time`
+Hook: useGetProjects(userId); AND useDeleteProject();
 
 TODO:
 Need to receive project id from Project Page
@@ -26,32 +27,32 @@ import { Container, CardActions, Button, Box, Typography } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
-import { useGetProjectsById } from "../hooks/useGetIds";
+import { useGetProjects } from "../hooks/useGetProjects";
+import { useDeleteProject } from "../hooks/useDeleteProject"; 
 
 export default function ProjectCard() {
 
     const defaultTheme = createTheme();
 
     const params = useParams({ strict: false });
-    const id = params?.id;
+    const {id, userId, projectId} = params;
 
-    const { data: projectEntry, isLoading, isError, refetch } = useGetProjectsById(id); 
+    const { data: projectEntry, isLoading, isError, refetch } = useGetProjects(userId);
 
     const { handleEditProject, handleTimeEntry } = useNavigationManager();
+
+    const deleteMutation = useDeleteProject();
+    const handleDelete = async () => {
+        await deleteMutation.mutateAsync(projectId);
+    };
 
     const handleRefresh = () => {
         refetch(); 
         console.log("Refreshing encryption servers...");
     };
 
-    // Add mutation hook for delete project
-    // const handleDelete = (projects.id) => {
-    //     const updatedData = projects.filter(item => item.id !== id);
-    //     setData(updatedData);
-    // };
-
-    if (id && isLoading) return <Typography>Loading Project Data...</Typography>;
-    if (id && isError) {
+    if (userId && isLoading) return <Typography>Loading Project Data...</Typography>;
+    if (userId && isError) {
         return (
         <Box>
             <Typography>Error loading user data.</Typography>
@@ -61,7 +62,7 @@ export default function ProjectCard() {
     }
     if (isError || !projectEntry) return <Typography>Project not found. Please check the ID.</Typography>;
 
-    if (!id) {
+    if (!userId) {
         return <Typography>Error: No Project ID provided.</Typography>;
     }
 
@@ -72,10 +73,7 @@ export default function ProjectCard() {
                 {projectEntry?.name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {projectEntry?.summary}
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                Duration: {projectEntry?.durationDays}
+                {projectEntry?.description}
                 </Typography>
                 <CardActions>
                     <Button 
@@ -89,7 +87,7 @@ export default function ProjectCard() {
                     <Button 
                         size="small" 
                         variant="contained"
-                        type="button"
+                        onClick={handleDelete}
                     >
                         Delete
                     </Button>

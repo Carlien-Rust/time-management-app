@@ -1,5 +1,7 @@
 /*
--- Clickup ticket
+Hook: usePatchTimeLogs();
+
+-- Clickup ticket 
 Update name, save; card text updates without page reload.
 */
 
@@ -7,7 +9,7 @@ import * as React from 'react';
 import {Box, Typography, Modal, TextField , Button, Alert } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
-import { useGetTimeLogsById } from "../hooks/useGetTime";
+import { usePatchTimeLogs } from "../hooks/usePatchTimeLogs";
 
 const style = {
   position: 'absolute',
@@ -25,13 +27,16 @@ export default function EditTimeLog() {
     const [loading, setLoading] = React.useState(false);
 
     const params = useParams({ strict: false });
-    const { id, logId } = params;
+    const { id, projectId } = params;
 
-    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogsById(id);
+    const patchMutation = usePatchTimeLogs();
 
-    const currentEntry = React.useMemo(() => {
-        return timeData?.find((log) => log.logId === logId);
-    }, [timeData, logId]);
+    const handleUpdateLog = async () => {
+        await patchMutation.mutateAsync({
+            id, 
+            payload: { projectId, date, hours, minutes, notes }
+        });
+    };
 
     // async to help execute and handle error
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -42,18 +47,17 @@ export default function EditTimeLog() {
         const formData = new FormData(event.currentTarget);
         // Update to use an array
         const upateEntry = {
-            logId: logId,
-            projectId: id,
+            id: id,
+            projectId: projectId,
             date: formData.get('date'),
-            startTime: formData.get('start_time'),
-            endTime: formData.get('end_time'),
-            durationHours: Number(formData.get('durationHours')),
-            description: formData.get('description'),
+            hours: Number(formData.get('hours')),
+            minutes: Number(formData.get('minutes')),
+            notes: formData.get('description'),
         };
 
         try {
             console.log("Saving to Firebase:", upateEntry);
-            // await updateTimeLog(upateEntry); // Your Firebase service call
+            handleUpdateLog;
 
             setLoading(false);
 
@@ -63,10 +67,10 @@ export default function EditTimeLog() {
         }
     };
     
-    if (!id || !logId) {
+    if (!id || !projectId) {
         return <Typography>Error: No ID provided.</Typography>;
     }
-    if (!currentEntry && !isLoading) {
+    if (!loading) {
         return <Typography>Error: Specific log entry not found.</Typography>;
     }
 
@@ -85,41 +89,41 @@ export default function EditTimeLog() {
                     margin="normal"
                     required
                     fullWidth
-                    id="project_id"
+                    id="projectId"
                     label="Project ID"
-                    name="project_id"
-                    value={id}
+                    name="projectId"
+                    value={projectId}
                     disabled
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="start_time"
-                    label="Start Time"
-                    type="time"
-                    id="start_time"
-                    defaultValue={currentEntry?.startTime}
+                    name="date"
+                    label="Date"
+                    type="date"
+                    id="date"
+                    //defaultValue={currentEntry?.date}
                 />
                 <TextField
                     margin="normal"
                     required
                     fullWidth
-                    name="end_time"
-                    label="End Time"
-                    type="time"
-                    id="end_time"
-                    defaultValue={currentEntry?.endTime}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="durationHours"
-                    label="Duration in hours"
+                    name="hours"
+                    label="Hours"
                     type="number"
-                    id="durationHours"
-                    defaultValue={currentEntry?.durationHours}
+                    id="hours"
+                    //defaultValue={currentEntry?.hours}
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    name="minutes"
+                    label="Minutes"
+                    type="number"
+                    id="minutes"
+                    //defaultValue={currentEntry?.minutes}
                 />
                 <TextField
                     margin="normal"
@@ -129,8 +133,7 @@ export default function EditTimeLog() {
                     label="Description"
                     type="text"
                     id="description"
-                    value={currentEntry?.description}
-                    disabled
+                    //value={currentEntry?.notes}
                 />
                 <Button 
                     variant="contained" 
