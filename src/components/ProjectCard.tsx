@@ -18,15 +18,16 @@ Render Project card with the project info:
 - Edit and Time log buttons that link to modals 
 
 
--- Clickup ticket
+-- Clickup ticket 
 Successful delete removes card immediately.
 Projects with linked entries return error → toast “Cannot delete: project has time entries.”
 
 */
 import { Container, CardActions, Button, Box, Typography } from '@mui/material';
-import { useParams } from "@tanstack/react-router";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
+import { useUserStore } from "../store/user/UserStore";
+import { useParams } from "@tanstack/react-router";
 import { useGetProjects } from "../hooks/useGetProjects";
 import { useDeleteProject } from "../hooks/useDeleteProject"; 
 
@@ -34,16 +35,24 @@ export default function ProjectCard() {
 
     const defaultTheme = createTheme();
 
-    const params = useParams({ strict: false });
-    const {id, userId, projectId} = params;
+    // IDs
+    // projectId
+    const params = useParams({ strict: false }); 
+    const { id } = params; // from URL - projectId
+    // userId
+    const user = useUserStore((state) => state.user);
+    const userId = user?.id
 
-    const { data: projectEntry, isLoading, isError, refetch } = useGetProjects(userId);
+    // Returns array
+    const { data: allProjects, isLoading, isError, refetch } = useGetProjects(userId);
+    // Single entry
+    const projectEntry = allProjects?.find((p) => p.id === id);
 
     const { handleEditProject, handleTimeEntry } = useNavigationManager();
 
     const deleteMutation = useDeleteProject();
     const handleDelete = async () => {
-        await deleteMutation.mutateAsync(projectId);
+        await deleteMutation.mutateAsync(id!);
     };
 
     const handleRefresh = () => {
@@ -62,7 +71,7 @@ export default function ProjectCard() {
     }
     if (isError || !projectEntry) return <Typography>Project not found. Please check the ID.</Typography>;
 
-    if (!userId) {
+    if (!id) {
         return <Typography>Error: No Project ID provided.</Typography>;
     }
 
@@ -83,7 +92,13 @@ export default function ProjectCard() {
                     >
                         Edit
                     </Button>
-                    <Button size="small" variant="contained" onClick={() => handleTimeEntry(id)}>Log Time</Button>
+                    <Button 
+                        size="small" 
+                        variant="contained" 
+                        onClick={() => handleTimeEntry(id)}
+                    >
+                        Log Time
+                    </Button>
                     <Button 
                         size="small" 
                         variant="contained"

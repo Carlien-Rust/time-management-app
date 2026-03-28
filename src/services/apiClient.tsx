@@ -12,8 +12,12 @@ apiClient.interceptors.request.use(async (config) => {
   try {
     const auth = getAuth();
     const user = auth.currentUser;
+    const token = localStorage.getItem('authtoken');
 
-    if (user) {
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log("Token attached to header successfully.");
+    } else if (user) {
 
       const idToken = await user.getIdToken();
       

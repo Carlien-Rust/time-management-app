@@ -6,10 +6,14 @@ Update name, save; card text updates without page reload.
 */
 
 import * as React from 'react';
-import {Box, Typography, Modal, TextField , Button, Alert } from '@mui/material';
-import { useParams } from "@tanstack/react-router";
+import {Box, Typography, Modal, TextField , Button, Alert, FormLabel, FormControl } from '@mui/material';
+import { useSearch } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
 import { usePatchTimeLogs } from "../hooks/usePatchTimeLogs";
+import { useUserStore } from '../store/user/UserStore';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { TimeSchema } from "../models/timelogs.schema";
 
 const style = {
   position: 'absolute',
@@ -21,43 +25,58 @@ const style = {
   p: 4,
 };
 
+export const UpdateTimeLogSchema = TimeSchema.omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
 export default function EditTimeLog() {
     const { handleTimeEntry } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
 
-    const params = useParams({ strict: false });
-    const { id, projectId } = params;
+    const search = useSearch({ strict: false });
+    const logId = search.id;
+    const projectId = search.projectId; 
+    console.log("ETLM projectID", projectId);
+    console.log("ETLM timelog ID", logId);
 
+    const user = useUserStore((state) => state.user);
+    const userId = user?.id
+
+    const methods = useForm({
+        resolver: zodResolver(UpdateTimeLogSchema),
+        mode: "onChange",
+        defaultValues: {
+            projectId: projectId || "",
+            userId: userId || "",
+            date: new Date().toISOString().split('T')[0], // Defaults to today
+            hours: 0, 
+            minutes: 0,
+            notes: ""
+        }
+    });
+ 
     const patchMutation = usePatchTimeLogs();
 
-    const handleUpdateLog = async () => {
-        await patchMutation.mutateAsync({
-            id, 
-            payload: { projectId, date, hours, minutes, notes }
-        });
-    };
-
     // async to help execute and handle error
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const onSubmit = async (timeData: any) => {
         setError(null);
         setLoading(true);
 
-        const formData = new FormData(event.currentTarget);
-        // Update to use an array
-        const upateEntry = {
-            id: id,
-            projectId: projectId,
-            date: formData.get('date'),
-            hours: Number(formData.get('hours')),
-            minutes: Number(formData.get('minutes')),
-            notes: formData.get('description'),
-        };
-
         try {
-            console.log("Saving to Firebase:", upateEntry);
-            handleUpdateLog;
+            console.log("Saving to Firebase:", timeData);
+            await patchMutation.mutateAsync({
+                id: timeData.logId, // Check this
+                payload: { 
+                    projectId: timeData.projectId, 
+                    date: timeData.date, 
+                    hours: timeData.hours, 
+                    minutes: timeData.minutes, 
+                    notes: timeData.notes 
+                }
+            });
 
             setLoading(false);
 
@@ -67,8 +86,11 @@ export default function EditTimeLog() {
         }
     };
     
-    if (!id || !projectId) {
-        return <Typography>Error: No ID provided.</Typography>;
+    if (!logId) {
+        return <Typography>No log ID provided.</Typography>;
+    }
+    if (!projectId) {
+        return <Typography>No project ID provided.</Typography>;
     }
     if (!loading) {
         return <Typography>Error: Specific log entry not found.</Typography>;
@@ -80,61 +102,61 @@ export default function EditTimeLog() {
             open={true}
             onClose={handleTimeEntry}
         >
-            <Box sx={style} component="form" onSubmit={handleSubmit}>
+            <Box sx={style} component="form" onSubmit={methods.handleSubmit(onSubmit)}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     Edit time log
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="projectId"
-                    label="Project ID"
-                    name="projectId"
-                    value={projectId}
-                    disabled
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="date"
-                    label="Date"
-                    type="date"
-                    id="date"
-                    //defaultValue={currentEntry?.date}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="hours"
-                    label="Hours"
-                    type="number"
-                    id="hours"
-                    //defaultValue={currentEntry?.hours}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="minutes"
-                    label="Minutes"
-                    type="number"
-                    id="minutes"
-                    //defaultValue={currentEntry?.minutes}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="description"
-                    label="Description"
-                    type="text"
-                    id="description"
-                    //value={currentEntry?.notes}
-                />
+                <FormControl>
+                    <FormLabel htmlFor="projectId">Project ID</FormLabel>
+                    <TextField
+                        {...methods.register("projectId")}
+                        error={!!methods.formState.errors.projectId}
+                        helperText={methods.formState.errors.projectId ? methods.formState.errors.projectId.message : ""}
+                        required
+                        label="Project ID"
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormLabel htmlFor="date">Date</FormLabel>
+                    <TextField
+                        {...methods.register("date")}
+                        error={!!methods.formState.errors.date}
+                        helperText={methods.formState.errors.date ? methods.formState.errors.date.message : ""}
+                        required
+                        label="Date"
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormLabel htmlFor="hours">Hours</FormLabel>
+                    <TextField
+                        {...methods.register("hours")}
+                        error={!!methods.formState.errors.hours}
+                        helperText={methods.formState.errors.hours ? methods.formState.errors.hours.message : ""}
+                        required
+                        label="Hours"
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormLabel htmlFor="minutes">Minutes</FormLabel>
+                    <TextField
+                        {...methods.register("minutes")}
+                        error={!!methods.formState.errors.minutes}
+                        helperText={methods.formState.errors.minutes ? methods.formState.errors.minutes.message : ""}
+                        required
+                        label="Minutes"
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormLabel htmlFor="notes">Notes</FormLabel>
+                    <TextField
+                        {...methods.register("notes")}
+                        error={!!methods.formState.errors.notes}
+                        helperText={methods.formState.errors.notes ? methods.formState.errors.notes.message : ""}
+                        required
+                        label="notes"
+                    />
+                </FormControl>
                 <Button 
                     variant="contained" 
                     type="submit"
@@ -144,7 +166,7 @@ export default function EditTimeLog() {
                 </Button>
                 <Button 
                     type="button"
-                    onClick={() => handleTimeEntry(id)} 
+                    onClick={() => handleTimeEntry(projectId)} 
                     disabled={loading} 
                 >
                     Cancel

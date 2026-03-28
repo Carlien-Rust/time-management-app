@@ -53,14 +53,14 @@ import { UserSchema} from "../models/users.schema";
 export const UserService = {
     postUser: async (payload: { userId: string; name: string; email: string }): Promise<User> => {
         const response = await apiClient.post<UserApiResponse<User>>(`/users`, payload);
-        return UserSchema.parse(response.data.data);
+        return UserSchema.parse(response.data);
     },
     getUsers: async (): Promise<User[]> => {
         const response = await apiClient.get<UserApiResponse<User[]>>(`/users`);
-        return z.array(UserSchema).parse(response.data.data);
+        return z.array(UserSchema).parse(response.data);
     },
     getUserById: async (id: string): Promise<User> => {
         const response = await apiClient.get<UserApiResponse<User>>(`/users/${id}`);
-        return UserSchema.parse(response.data.data);
+        return UserSchema.parse(response.data);
     },
 };

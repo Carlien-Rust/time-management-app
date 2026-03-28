@@ -8,13 +8,13 @@ export const fetchTimeLogs = async (projectId: string) => {
   return TimeLogsService.getTimeLogsByProjectId(projectId!);
 };
 
-export const useGetTimeLogsByProjectId = (projectId: string) => {
+export const useGetTimeLogsByProjectId = (id: string | null | undefined) => {
   return useQuery({
     queryKey: ["timeLogs"],
     queryFn: () => {
-      if (!projectId) throw new Error("ID is required");
-      return fetchTimeLogs(projectId); 
+      if (!id) throw new Error("ID is required");
+      return fetchTimeLogs(id); 
     },
-    enabled: !!projectId,
+    enabled: !!id,
   });
 };

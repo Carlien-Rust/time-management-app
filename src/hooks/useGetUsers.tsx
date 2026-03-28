@@ -24,10 +24,12 @@ export const fetchUserById = async (id: string) => {
 export const useGetUserById = (id: string | undefined) => {
   return useQuery({
     queryKey: ["users", id],
-    queryFn: () => {
+    queryFn: async () => {
       if (!id) throw new Error("ID is required");
-      return fetchUserById(id); 
+      const data = await fetchUserById(id as string);
+      return data
     },
     enabled: !!id, // Only runs if ID exists
+    retry: 1,
   });
 };

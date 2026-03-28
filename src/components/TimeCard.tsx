@@ -1,7 +1,7 @@
 /*
 Hook: useGetTimeLogsByProjectId();
 */
-import { Container, CardActions, Button, Typography, Alert } from '@mui/material';
+import { Container, CardActions, Button, Typography, Alert, Box } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
@@ -13,20 +13,29 @@ export default function TimeCard() {
     const defaultTheme = createTheme();
 
     const params = useParams({ strict: false });
-    const { id, projectId } = params;
+    const { id } = params; // projectId
+    console.log("TC projectId:", id);
 
-    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogsByProjectId(projectId);
+    const { data: timeData, isLoading, isError, refetch } = useGetTimeLogsByProjectId(id);
 
     const { handleAddTime } = useNavigationManager();
 
-    // const handleRefresh = () => {
-    //     refetch(); 
-    //     console.log("Refreshing encryption servers...");
-    // };
+    const handleRefresh = () => {
+        refetch(); 
+        console.log("Refreshing encryption servers...");
+    };
 
     if (isLoading) return <Typography>Loading Time Data...</Typography>;
-    if (isError) return <Typography>Project not found. Please check the ID.</Typography>;
-    if (!id || !projectId) {
+    if (isError) return <Typography>No Project ID provided.</Typography>;
+    if (id && isError) {
+        return (
+        <Box>
+            <Typography>Error loading user data.</Typography>
+            <Button onClick={handleRefresh}>Try Again</Button>
+        </Box>
+        );
+    }
+    if (!id) {
         return <Typography>Error: No Project ID provided.</Typography>;
     }
     if (!timeData || timeData.length === 0) {
@@ -36,7 +45,7 @@ export default function TimeCard() {
                 <Alert severity="info" sx={{ my: 2 }}>
                     No time logs found for this project.
                 </Alert>
-                <Button variant="contained" onClick={() => handleAddTime(id, projectId)}>
+                <Button variant="contained" onClick={() => handleAddTime(id)}>
                     Log your first entry
                 </Button>
             </Container>
@@ -49,13 +58,13 @@ export default function TimeCard() {
                 <Typography variant="h6" sx={{ mb: 2 }}>Time Entries</Typography>
                 < TimeLogTable
                     logs={timeData || []} 
-                    projectId={projectId}
+                    projectId={id}
                 />
                 <CardActions>
                     <Button 
                         size="small" 
                         variant="contained" 
-                        onClick={() => handleAddTime(id, projectId)}
+                        onClick={() => handleAddTime(id)}
                     >
                         Log new time
                     </Button>

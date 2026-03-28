@@ -13,10 +13,12 @@ Empty State: If no projects exist, show illustration and “Add Project” butto
 */
 
 export default function DashboardPage() {
+   
     return (
         <main>
             <h2>Overview</h2>
             <p>Welcome to the Admin Dashboard!</p>
         </main>
+
     );
 };

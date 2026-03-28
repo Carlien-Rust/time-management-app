@@ -4,7 +4,7 @@ import { useNavigationManager } from "../services/navigationManager";
 import { type Project } from "../models/projects.types";
 
 export const usePatchProjects = () => {
-    const { handleClickOverview } = useNavigationManager();
+    const { handleClickProject } = useNavigationManager();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -13,7 +13,7 @@ export const usePatchProjects = () => {
             console.log("Updated project successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
             queryClient.setQueryData(["projects", data.id], data);
-            handleClickOverview();
+            handleClickProject(data.id)
         },
         onError: (error) => {
             console.error("Project updation failed:", error);

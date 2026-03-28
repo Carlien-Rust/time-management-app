@@ -1,32 +1,47 @@
-/*
- Hooks: Need to fetch user info
-*/
-import { Paper, Avatar, Typography } from "@mui/material"
 import { Person } from "@mui/icons-material";
-import { useAuth} from "../services/auth_services/AuthProvider";
-// import { useGetUserById } from "../hooks/useGetUsers";
+import  { Typography, Paper, Avatar } from "@mui/material";
+import { useGetUserById } from "../hooks/useGetUsers";
+import { useAuth } from "../services/auth_services/AuthProvider";
 
 export default function ProfileCard() {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
+    const id = user?.uid;
+    console.log(id)
 
-    // const params = useParams({ strict: false });
-    // const id = params?.id;
-    // const {data: usersData , isLoading, isError} = useGetUserById(id);
+    const { 
+        data: backendUser, 
+        isLoading: backendLoading, 
+        isError 
+    } = useGetUserById(id); 
+
+    if (authLoading) return <p>Checking authentication...</p>;
+
+    if (user && backendLoading) return <p>Fetching profile details...</p>;
 
     if (!user) {
         return <Typography>Please log in to view your profile.</Typography>;
     }
 
+    if (isError || !backendUser) {
+        return (
+            <Typography color="error">
+                Authenticated as {user.email}, but no backend record found.
+            </Typography>
+        );
+    }
+
+    // 5. Final Render
     return (
-        <Paper>
+        <Paper sx={{ p: 3, textAlign: 'center' }}>
             <h2>Welcome!</h2>
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <Avatar sx={{ m: 'auto', bgcolor: 'secondary.main' }}>
                 <Person />
             </Avatar>
-            <body>Username: {user.displayName}</body>
-            <body>Email: {user.email}</body>
-            {/* <body>Username: {usersData.displayName}</body>
-            <body>Email: {usersData.email}</body> */}
+            <Typography variant="h6">Username: {backendUser.name}</Typography>
+            <Typography>Email: {backendUser.email}</Typography>
+            <Typography variant="caption">
+                Joined: {new Date(backendUser.createdAt).toLocaleDateString()}
+            </Typography>
         </Paper>
     );
-};
+}

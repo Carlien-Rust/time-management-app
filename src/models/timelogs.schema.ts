@@ -16,10 +16,10 @@ import { z } from 'zod';
 export const TimeSchema = z.object({
   id: z.string(),
   projectId: z.string(),
-  userid: z.string(),
+  userId: z.string(),
   date: z.string(),
-  hours: z.number(),
-  minutes: z.number(),
+  hours: z.coerce.number().min(0),
+  minutes: z.coerce.number().min(0).max(59),
   notes: z.string(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),

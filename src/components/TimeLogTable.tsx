@@ -9,7 +9,7 @@ On fetch error: alert banner with retry.
 */
 
 import * as React from 'react';
-import { useParams } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip, Typography } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useNavigationManager } from '../services/navigationManager';
@@ -34,13 +34,24 @@ interface TimeLogTableProps {
 
 export default function TimeLogTable({ logs }: TimeLogTableProps) {
   const { handleEditTime } = useNavigationManager();
-  const params = useParams({ strict: false });
-  const { id, projectId } = params;
+  const search = useSearch({ strict: false });
+  const id = search.projectId; 
+  const logId = search.id;
+
+  console.log("ETLM projectID", id);
+  console.log("ETLM timelog ID", logId);
 
   const deleteMutation = useDeleteTimeLogs();
   const handleDelete = async () => {
-        await deleteMutation.mutateAsync(id);
+        await deleteMutation.mutateAsync(logId!);
   };
+
+  if (!id) {
+      return <Typography>No project ID provided.</Typography>;
+  }
+  if (!logId) {
+      return <Typography>No log ID provided.</Typography>;
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -65,6 +76,7 @@ export default function TimeLogTable({ logs }: TimeLogTableProps) {
             <TableBody>
               {logs.map((row) => (
                 <TableRow hover key={row.id}>
+                  <TableCell>{row.id}</TableCell>
                   <TableCell>{row.projectId}</TableCell>
                   <TableCell>{row.userId}</TableCell>
                   <TableCell component="th" scope="row">{row.date}</TableCell>
@@ -76,7 +88,7 @@ export default function TimeLogTable({ logs }: TimeLogTableProps) {
                   <TableCell align="center">
                     <Tooltip title="Edit Entry">
                       <IconButton 
-                        onClick={() => handleEditTime(projectId, row.id)}
+                        onClick={() => handleEditTime(id, logId)}
                         size="small"
                         color="primary"
                       >

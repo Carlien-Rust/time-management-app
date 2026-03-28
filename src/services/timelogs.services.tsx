@@ -88,21 +88,21 @@ import { z } from "zod";
 export const TimeLogsService = {
     getTimeLogsByProjectId: async (projectId: string): Promise<TimeLogs[]> => {
         const response = await apiClient.get<TimeLogApiResponse<TimeLogs[]>>(`/time-entries/project/${projectId}`);
-        return z.array(TimeSchema).parse(response.data.data);
+        return z.array(TimeSchema).parse(response.data);
     },
     getTimeLogsByUserId: async (userId: string): Promise<TimeLogs[]> => {
         const response = await apiClient.get<TimeLogApiResponse<TimeLogs[]>>(`/time-entries/user/${userId}`);
-        return z.array(TimeSchema).parse(response.data.data);
+        return z.array(TimeSchema).parse(response.data);
     },
     postTimeLogs: async (payload: { projectId: string; userId: string; date: string; hours: 0; minutes: 0; notes: string }): Promise<TimeLogs> => {
         const response = await apiClient.post<TimeLogApiResponse<TimeLogs>>(`/time-entries`, payload);
-        return TimeSchema.parse(response.data.data);
+        return TimeSchema.parse(response.data);
     },
     deleteTimeLogs: async (id: string): Promise<void> => {
         await apiClient.delete(`/time-entries/${id}`);
     },
     patchTimeLogs: async (id: string, payload: { projectId: string; date: string; hours: 0; minutes: 0; notes: string }): Promise<TimeLogs> => {
         const response = await apiClient.patch<TimeLogApiResponse<TimeLogs[]>>(`/time-entries/${id}`, payload);
-        return TimeSchema.parse(response.data.data);
+        return TimeSchema.parse(response.data);
     }
 };

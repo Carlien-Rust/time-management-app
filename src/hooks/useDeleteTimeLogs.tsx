@@ -17,4 +17,4 @@ export const useDeleteTimeLogs= () => {
             console.error("Time log deletion failed:", error);
         }
     });
-};
+}; 

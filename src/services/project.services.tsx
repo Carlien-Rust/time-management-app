@@ -62,18 +62,18 @@ import { z } from "zod";
 export const ProjectService = {
     getProjects: async (userId: string): Promise<Project[]> => {
         const response = await apiClient.get<ProjectApiResponse<Project[]>>(`/projects/user/${userId}`);
-        return z.array(ProjectSchema).parse(response.data.data);
+        return z.array(ProjectSchema).parse(response.data);
     },
     postProjects: async (payload: { name: string; userId: string; description: string }): Promise<Project> => {
         const response = await apiClient.post<ProjectApiResponse<Project>>(`/projects`, payload);
-        return ProjectSchema.parse(response.data.data);
+        return ProjectSchema.parse(response.data);
     },
     deleteProject: async (projectId: string): Promise<void> => {
         await apiClient.delete(`/projects/${projectId}`);
     },
     patchProject: async (projectId: string, payload: { name?: string; description?: string }): Promise<Project> => {
         const response = await apiClient.patch<ProjectApiResponse<Project[]>>(`/projects/${projectId}`, payload);
-        return ProjectSchema.parse(response.data.data);
+        return ProjectSchema.parse(response.data);
     }
 };
 

@@ -15,49 +15,55 @@ Session Persistence: The user stays logged in after page reload or browser resta
 */
 
 import * as React from 'react';
-import { Avatar, Button, CssBaseline, TextField, Box, Typography, Container, Alert } from '@mui/material';
+import { Avatar, Button, CssBaseline, TextField, Box, Typography, Container, Alert, FormLabel, FormControl, IconButton, InputAdornment } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from "../../services/navigationManager";
 import { useAuth } from '../../services/auth_services/AuthProvider';
+import { useForm } from "react-hook-form";
+import {z} from "zod";
+import { useState } from 'react';
+import { VisibilityOff, Visibility } from '@mui/icons-material';
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const defaultTheme = createTheme();
 
+const RegisterSchema = z.object({
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+});
+
+type RegisterInputs = z.infer<typeof RegisterSchema>;
+
 export default function SignUp() {
+
+  const methods = useForm<RegisterInputs>({
+    resolver: zodResolver(RegisterSchema),
+    mode: "onChange",
+  });
 
   const { handleLogout, handleClickOverview } = useNavigationManager();
   const { register } = useAuth();
 
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // async to help execute and handle error
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit = async (data: RegisterInputs) => {
     setError(null);
+    setLoading(true);
 
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string;
-    const password = data.get('password') as string;
-
-    if (!email || !password) {
-      setError("Set both email and password!");
-      return;
-    }
-
-    try
-    {
-      setLoading(true);
-      await register(email, password);
-
-    } catch (error: any) {
+    try {
+      await register(data.email, data.password, data.firstName, data.lastName);
+      handleClickOverview(); 
+    } catch (err: any) {
       setLoading(false);
-      if (error.code === 'auth/user-not-found') {
-        setError("No account found with this email. Redirecting to sign up?");
-      } else if (error.code === 'auth/wrong-password') {
-        setError("Incorrect password. Please try again.");
+      if (err.code === 'auth/email-already-in-use') {
+        setError("This email is already registered.");
       } else {
-        setError("Failed to sign in. Check your credentials.");
+        setError(err.message || "Failed to create account.");
       }
     }
   };
@@ -80,49 +86,77 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          <Box component="form" noValidate onSubmit={methods.handleSubmit(onSubmit)} sx={{ mt: 1 }}>
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-            <TextField
-              autoComplete="given-name"
-              name="firstName"
-              required
-              fullWidth
-              id="firstName"
-              label="First Name"
-              autoFocus
-            />
-            <TextField
-              required
-              fullWidth
-              id="lastName"
-              label="Last Name"
-              name="lastName"
-              autoComplete="family-name"
-            />
-            <TextField
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-            />
-            <TextField
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="new-password"
-            />
+            <FormControl>
+              <FormLabel htmlFor="firstName">First Name</FormLabel>
+              <TextField
+                {...methods.register("firstName")}
+                error={!!methods.formState.errors.firstName}
+                helperText={methods.formState.errors.firstName ? methods.formState.errors.firstName.message : ""}
+                required
+                label="First Name"
+                //autoComplete="given-name"
+              />
+            </FormControl> 
+            <FormControl> 
+              <FormLabel htmlFor="lastName">Last Name</FormLabel>            
+              <TextField
+                {...methods.register("lastName")}
+                error={!!methods.formState.errors.lastName}
+                helperText={methods.formState.errors.lastName ? methods.formState.errors.lastName.message : ""}
+                required
+                label="Last Name"
+                //autoComplete="family-name"
+              />
+            </FormControl> 
+            <FormControl>
+              <FormLabel htmlFor="email">Email</FormLabel> 
+              <TextField
+                {...methods.register("email")}
+                error={!!methods.formState.errors.email}
+                helperText={methods.formState.errors.email ? methods.formState.errors.email.message : ""}
+                required
+                label="Email Address"
+                placeholder="your@email.com"
+                //autoComplete="email"
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="password">Password</FormLabel>  
+              <TextField
+                {...methods.register("password", { pattern: /^[A-Za-z]+$/i })}
+                error={!!methods.formState.errors.password}
+                helperText={methods.formState.errors.password ? methods.formState.errors.password.message : ""}
+                required
+                type={showPassword ? "text" : "password"}
+                label="password"
+                placeholder="Enter your password"
+                //autoComplete="current-password"
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label={showPassword ? "Hide password visibility" : "Show password visibility"}
+                          onClick={() => setShowPassword((show) => !show)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            </FormControl> 
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
-              onClick={handleClickOverview} 
+             // onClick={handleClickOverview} 
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </Button>
@@ -135,3 +169,4 @@ export default function SignUp() {
     </ThemeProvider>
   );
 }
+

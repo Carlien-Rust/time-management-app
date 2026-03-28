@@ -4,15 +4,19 @@ Include project name, project duration (start/end), overview of single project
 
 Hook: usePostProjects();
 
--- Clickup ticket
+-- Clickup ticket 
 “New Entry” Modal (Project, Date, Duration, Notes) with validation. Creates and updates using API
 */
 
 import * as React from 'react';
-import {Box, Typography, Modal, TextField , Button, Alert} from '@mui/material';
+import { Box, Typography, Modal, TextField , Button, Alert, FormLabel, FormControl } from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
 import { usePostProjects } from "../hooks/usePostProjects";
-import { useParams } from "@tanstack/react-router";
+import { useUserStore } from "../store/user/UserStore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProjectSchema } from "../models/projects.schema";
+import { type Project } from "../models/projects.types";
 
 const style = {
   position: 'absolute',
@@ -24,34 +28,49 @@ const style = {
   p: 4,
 };
 
+export const CreateProjectSchema = ProjectSchema.omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+});
+
 export default function AddProject() {
     const { handleClickOverview } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
 
-    const params = useParams({ strict: false });
-    const userId = params?.userId;
+    const user = useUserStore((state) => state.user);
+    const userId = user?.id
+    //console.log("NPM user:", userId);
+
+    const methods = useForm({
+        resolver: zodResolver(CreateProjectSchema),
+        mode: "onChange",
+        defaultValues: {
+            name: "",
+            userId: userId || "",
+            description: ""
+        }
+    });
+
     const postMutation = usePostProjects();
-
+   
     // async to help execute and handle error
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const onSubmit = async (data: Project) => {
+        setLoading(true);
         setError(null);
-
-        const formData = new FormData(event.currentTarget);
-        const projectData = {
-            name: formData.get('name'),
-            userId: userId,
-            description: formData.get('description'),
-        };
+        // alert("Form is valid! Attempting to save..."); // If you don't see this, the problem is Zod validation.
+        // console.log("Payload:", projectData);
 
         try {
-            console.log("Saving to Firebase:", projectData);
-            await postMutation.mutateAsync({ name, userId, description });
+            console.log("Saving to Firebase:", data);
+            await postMutation.mutateAsync({
+                name: data.name, 
+                userId: data.userId, 
+                description: data.description
+            });
             
             setLoading(false);
-            handleClickOverview();
-
         } catch (err: any) {
             setLoading(false);
             setError("Failed to create project. Please check your inputs.");
@@ -64,40 +83,40 @@ export default function AddProject() {
             open={true}
             onClose={handleClickOverview}
         >
-            <Box sx={style} component="form" onSubmit={handleSubmit}>
+            <Box sx={style} component="form" noValidate onSubmit={methods.handleSubmit(onSubmit)}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     Add new project
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Project Name"
-                    name="name"
-                    autoFocus
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="userId"
-                    label="User Id"
-                    type="string"
-                    id="userId"
-                    value={userId}
-                    disabled
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="description"
-                    label="Project Overview"
-                    type="text"
-                    id="description"
-                />
+                <FormControl>
+                    <FormLabel htmlFor="name">Project Name</FormLabel>
+                    <TextField
+                        {...methods.register("name")}
+                        error={!!methods.formState.errors.name}
+                        helperText={methods.formState.errors.name ? methods.formState.errors.name.message : ""}
+                        required
+                        label="name"
+                    />
+                </FormControl> 
+                <FormControl>
+                    <FormLabel htmlFor="userId">User Id</FormLabel> 
+                    <TextField
+                        {...methods.register("userId")}
+                        error={!!methods.formState.errors.userId}
+                        helperText={methods.formState.errors.userId ? methods.formState.errors.userId.message : ""}
+                        label="userId"
+                    />
+                </FormControl> 
+                <FormControl>
+                    <FormLabel htmlFor="description">Project Overview</FormLabel>
+                    <TextField
+                        {...methods.register("description")}
+                        error={!!methods.formState.errors.description}
+                        helperText={methods.formState.errors.description ? methods.formState.errors.description.message : ""}
+                        required
+                        label="description"
+                    />
+                </FormControl>
                 <Button 
                     type="button"
                     onClick={handleClickOverview} 

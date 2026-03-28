@@ -213,6 +213,7 @@ export default defineConfig([
 7) API
 - https://axios-http.com/docs/intro
 - TanStack Query, useQuery is for Reading (GET). useMutation is for Writing or Acting (POST/PATCH/DELETE)
+- Creating/persisting users between auth provider and user database in BE
 
 - apiClient
 ```

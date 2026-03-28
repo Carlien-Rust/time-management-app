@@ -24,20 +24,36 @@ import {
 } from 'firebase/auth';
 import { auth } from './config/firebaseConfig'; 
 import { AuthContext } from './context/AuthContext';
+import { UserService } from "../../services/users.services";
 
 export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Sign actions: use in components by importing [import { useAuth } from '../services/auth_services/AuthProvider'; and const { const names - deconstruct } = useAuth();]
-
-  const login = (email: string, pass: string) => {
-    console.log('ha')
-    return signInWithEmailAndPassword(auth, email, pass);
+  const login = async (email: string, pass: string) => {
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    const fbUser = userCredential.user;
+    //console.log("fbUser in AuthProvider:", fbUser);
+    return userCredential;
   };
 
-  const register = (email: string, pass: string) => {
-    return createUserWithEmailAndPassword(auth, email, pass);
+  // Update to work with Firebase and BE database - struggled with this
+  const register = async (email: string, pass: string, firstName: string, lastName: string) => {
+      // 1. Create the Firebase Auth record
+      const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+      const fbUser = userCredential.user;
+
+      try {
+        await UserService.postUser({
+          userId: fbUser.uid,
+          name: `${firstName} ${lastName}`,
+          email: fbUser.email!,
+        });
+      } catch (backendError) {
+        console.error("Firebase user created, but backend sync failed:", backendError);
+      }
+
+      return fbUser;
   };
 
   const resetPass = (auth: Auth, pass: string) => {

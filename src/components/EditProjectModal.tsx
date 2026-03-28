@@ -2,17 +2,22 @@
 Edit project 
 Include project name, project duration (start/end), overview of single project
 
-Hook: usePostProjects();
+Hook: usePatchProjects(); 
 
 -- Clickup ticket
 Update name, save; card text updates without page reload.
 */
 
 import * as React from 'react';
-import {Box, Typography, Modal, TextField , Button, Alert } from '@mui/material';
+import {Box, Typography, Modal, TextField , Button, Alert, FormLabel, FormControl } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
 import { usePatchProjects } from "../hooks/usePatchProject"; 
+import { useUserStore } from "../store/user/UserStore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProjectSchema } from "../models/projects.schema";
+import { type Project } from "../models/projects.types";
 
 const style = {
   position: 'absolute',
@@ -24,40 +29,49 @@ const style = {
   p: 4,
 };
 
+export const UpdateProjectSchema = ProjectSchema.omit({
+    createdAt: true,
+    updatedAt: true,
+});
+
 export default function EditProject() {
     const { handleClickProject } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
     const [loading, setLoading] = React.useState(false);
 
     const params = useParams({ strict: false });
-    const { id, projectId } = params;
+    const { id } = params;
+
+    const user = useUserStore((state) => state.user);
+    const userId = user?.id
+    //console.log("EPM user:", userId);
+
+    const methods = useForm({
+        resolver: zodResolver(UpdateProjectSchema),
+        mode: "onChange",
+        defaultValues: {
+            id: id,
+            name: "",
+            userId: userId,
+            description: ""
+        }
+    });
+
     const patchMutation = usePatchProjects();
 
-    const handleUpdate = async () => {
-        await patchMutation.mutateAsync({
-            projectId, 
-            payload: {name, description}
-        });
-    };
-
     // async to help execute and handle error
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const onSubmit = async (projectData: Project) => {
         setError(null);
         setLoading(true);
 
-        const formData = new FormData(event.currentTarget);
-        const projectData = {
-            projectId: projectId,
-            name: formData.get('name'),
-            description: formData.get('description'),
-        };
-
         try {
             console.log("Saving to Firebase:", projectData);
-            handleUpdate();
-            setLoading(false);
+            await patchMutation.mutateAsync({
+                projectId: projectData.id, 
+                payload: {name: projectData.name, description: projectData.description}
+            });
 
+            setLoading(false);
         } catch (err: any) {
             setLoading(false);
             setError("Failed to create project. Please check your inputs.");
@@ -74,31 +88,31 @@ export default function EditProject() {
             open={true}
             onClose={handleClickProject}
         >
-            <Box sx={style} component="form" onSubmit={handleSubmit}>
+            <Box sx={style} component="form" onSubmit={methods.handleSubmit(onSubmit)}>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     Edit project
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="name"
-                    label="Project Name"
-                    name="name"
-                    //defaultValue={projectEntry?.name}
-                    autoFocus
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="description"
-                    label="Project Overview"
-                    type="text"
-                    id="description"
-                    // defaultValue={projectEntry?.description}
-                />
+                <FormControl>
+                    <FormLabel htmlFor="name">Project Name</FormLabel>
+                    <TextField
+                        {...methods.register("name")}
+                        error={!!methods.formState.errors.name}
+                        helperText={methods.formState.errors.name ? methods.formState.errors.name.message : ""}
+                        required
+                        label="Name"
+                    />
+                </FormControl> 
+                <FormControl>
+                    <FormLabel htmlFor="description">Project Overview</FormLabel>
+                    <TextField
+                        {...methods.register("description")}
+                        error={!!methods.formState.errors.description}
+                        helperText={methods.formState.errors.description ? methods.formState.errors.description.message : ""}
+                        required
+                        label="Description"
+                    />
+                </FormControl>
                 <Button 
                     variant="contained" 
                     type="submit"

@@ -8,7 +8,7 @@ export const fetchProjects = async (userId: string) => {
   return ProjectService.getProjects(userId!);
 };
 
-export const useGetProjects = (userId: string) => {
+export const useGetProjects = (userId: string | null | undefined ) => {
   return useQuery({
     queryKey: ["projects"],
     queryFn: () => {

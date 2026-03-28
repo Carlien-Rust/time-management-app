@@ -4,7 +4,7 @@ import { useNavigationManager } from "../services/navigationManager";
 import { type TimeLogs } from "../models/timelogs.types";
 
 export const usePatchTimeLogs = () => {
-    const { handleClickOverview } = useNavigationManager();
+    const { handleTimeEntry } = useNavigationManager();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -13,7 +13,7 @@ export const usePatchTimeLogs = () => {
             console.log("Updated time log successfully!");
             queryClient.invalidateQueries({ queryKey: ["timeLogs"] });
             queryClient.setQueryData(["timeLogs", data.id], data);
-            handleClickOverview();
+            handleTimeEntry(data.id);
         },
         onError: (error) => {
             console.error("Time log updation failed:", error);
