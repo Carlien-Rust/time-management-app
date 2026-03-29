@@ -76,6 +76,7 @@ export function useNavigationManager() {
     const handleLogout = () => {
         navigate({ to: "/login" });
     };
+    
 
    return {
     handleClickOverview, 

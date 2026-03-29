@@ -9,48 +9,50 @@ On fetch error: alert banner with retry.
 */
 
 import * as React from 'react';
-import { useSearch } from "@tanstack/react-router";
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip, Typography, Alert, Button, Skeleton, Pagination, TableFooter, Chip } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import { useNavigationManager } from '../services/navigationManager';
 import { useDeleteTimeLogs } from "../hooks/useDeleteTimeLogs";
-
-interface TimeLog {
-  id: string;
-  projectId: string;
-  userId: string;
-  date: string;
-  hours: string;
-  minutes: string;
-  notes: string;
-  createdAt: string,
-  updatedAt: string,
-}
+import { type TimeLogs, type Project } from "../models/timelogs.types";
 
 interface TimeLogTableProps {
-  logs: TimeLog[];
+  logs: TimeLogs[];
   projectId: string;
+  projects?: Project[];
+  showProjectChip?: boolean;
+  isLoading: boolean;
+  isError: boolean;
+  refetch: () => void; 
 }
 
-export default function TimeLogTable({ logs }: TimeLogTableProps) {
+export default function TimeLogTable({ logs, projects = [], showProjectChip = false, isLoading, isError, refetch }: TimeLogTableProps) {
   const { handleEditTime } = useNavigationManager();
-  const search = useSearch({ strict: false });
-  const id = search.projectId; 
-  const logId = search.id;
-
-  console.log("ETLM projectID", id);
-  console.log("ETLM timelog ID", logId);
-
   const deleteMutation = useDeleteTimeLogs();
-  const handleDelete = async () => {
-        await deleteMutation.mutateAsync(logId!);
+  const [page, setPage] = React.useState(1);
+  const rowsPerPage = 10;
+
+  const paginatedLogs = logs.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
+  const totalHours = logs.reduce((sum, log) => sum + Number(log.hours), 0);
+  const totalMinutes = logs.reduce((sum, log) => sum + Number(log.minutes), 0);
+  const displayTotal = `${totalHours + Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`;
+
+  const handleDelete = async (logId: string) => {
+    try {
+      // Passes the specific row ID to the mutation
+      await deleteMutation.mutateAsync(logId);
+      console.log("Deleted log:", logId);
+    } catch (error) {
+      console.error("Deletion failed in component:", error);
+    }
   };
 
-  if (!id) {
-      return <Typography>No project ID provided.</Typography>;
-  }
-  if (!logId) {
-      return <Typography>No log ID provided.</Typography>;
+  if (isError) {
+      return (
+          <Alert severity="error" action={<Button onClick={() => refetch()}>Retry</Button>}>
+              Failed to load time logs.
+          </Alert>
+      );
   }
 
   return (
@@ -59,9 +61,9 @@ export default function TimeLogTable({ logs }: TimeLogTableProps) {
         <Typography variant="h6" id="tableTitle" component="div" sx={{ mb: 2 }}>
           Project Time Logs
         </Typography>
-        <TableContainer>
+        <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 'var(--shadow)'}}>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-            <TableHead>
+            <TableHead sx={{ bgcolor: 'background.default' }}>
               <TableRow>
                 <TableCell>ID</TableCell>
                 <TableCell>Project ID</TableCell>
@@ -70,50 +72,89 @@ export default function TimeLogTable({ logs }: TimeLogTableProps) {
                 <TableCell align="right">Hours</TableCell>
                 <TableCell align="right">Minutes</TableCell>
                 <TableCell>Notes</TableCell>
+                {showProjectChip && <TableCell sx={{ fontWeight: 'bold' }}>Project</TableCell>}
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {logs.map((row) => (
-                <TableRow hover key={row.id}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.projectId}</TableCell>
-                  <TableCell>{row.userId}</TableCell>
-                  <TableCell component="th" scope="row">{row.date}</TableCell>
-                  <TableCell align="right">{row.hours}</TableCell>
-                  <TableCell align="right">{row.minutes}</TableCell>
-                  <TableCell>{row.notes}</TableCell>
-                  
-                  {/* ACTIONS COLUMN */}
-                  <TableCell align="center">
-                    <Tooltip title="Edit Entry">
-                      <IconButton 
-                        onClick={() => handleEditTime(id, logId)}
-                        size="small"
-                        color="primary"
-                      >
-                        <Edit fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete Entry">
-                      <IconButton 
-                        size="small" 
-                        color="error"
-                        onClick={handleDelete}
-                      >
-                        <Delete fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell colSpan={showProjectChip ? 5 : 4}>
+                      <Skeleton variant="text" height={40} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                paginatedLogs.map((row) => (
+                  <TableRow hover key={row.id}>
+                    <TableCell>{row.id}</TableCell>
+                    <TableCell>{row.projectId}</TableCell>
+                    <TableCell>{row.userId}</TableCell>
+                    <TableCell component="th" scope="row">{row.date}</TableCell>
+                    <TableCell align="right">{row.hours}</TableCell>
+                    <TableCell align="right">{row.minutes}</TableCell>
+                    <TableCell>{row.notes}</TableCell>
+                    {showProjectChip && (
+                      <TableCell>
+                        <Chip 
+                          label={projects.find(p => p.id === row.projectId)?.name || 'Unknown'} 
+                          size="small" 
+                          color="primary" 
+                          variant="outlined" 
+                        />
+                      </TableCell>
+                    )}
+                    
+                    {/* ACTIONS COLUMN */}
+                    <TableCell align="center">
+                      <Tooltip title="Edit Entry">
+                        <IconButton 
+                          onClick={() => handleEditTime(row.id, row.projectId)}
+                          size="small"
+                          color="primary"
+                        >
+                          <Edit fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Entry">
+                        <IconButton 
+                          size="small" 
+                          color="error"
+                          onClick={() => handleDelete(row.id)}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
               {logs.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">No time logs found.</TableCell>
+                  <TableCell colSpan={1} align="center">No time logs found.</TableCell>
                 </TableRow>
               )}
             </TableBody>
+            {!isLoading && (
+              <TableFooter>
+                  <TableRow sx={{ bgcolor: 'primary.light' }}>
+                      <TableCell colSpan={7} sx={{ fontWeight: 'bold' }}>Total Logged</TableCell>
+                      {showProjectChip && <TableCell />}
+                      <TableCell colSpan={8} sx={{ fontWeight: 'bold' }}>{displayTotal}</TableCell>
+                      <TableCell colSpan={9} />
+                  </TableRow>
+              </TableFooter>
+            )}
           </Table>
+          <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+              <Pagination 
+                  count={Math.ceil(logs.length / rowsPerPage)} 
+                  page={page} 
+                  onChange={(_, v) => setPage(v)} 
+                  color="primary" 
+              />
+          </Box>
         </TableContainer>
       </Paper>
     </Box>

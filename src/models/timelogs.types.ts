@@ -10,3 +10,8 @@ export interface TimeLogApiResponse<T> {
   message?: string;  // Success/Error message
   success: boolean;  // Helper for quick checks
 }
+
+export interface Project {
+  id: string;
+  name: string;
+}

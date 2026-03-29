@@ -11,6 +11,7 @@ Project, Date, Duration, Notes
 */
 
 import ProjectCard from "../components/ProjectCard";
+import TimeLogPage from "./TimeLogPage";
 
 export default function ProjectPage() {
     return (

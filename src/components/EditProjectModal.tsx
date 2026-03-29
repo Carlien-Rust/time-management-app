@@ -9,7 +9,7 @@ Update name, save; card text updates without page reload.
 */
 
 import * as React from 'react';
-import {Box, Typography, Modal, TextField , Button, Alert, FormLabel, FormControl } from '@mui/material';
+import {Box, Typography, Modal, TextField , Button, Alert, FormControl } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
 import { useNavigationManager } from "../services/navigationManager";
 import { usePatchProjects } from "../hooks/usePatchProject"; 
@@ -17,7 +17,7 @@ import { useUserStore } from "../store/user/UserStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProjectSchema } from "../models/projects.schema";
-import { type Project } from "../models/projects.types";
+import { useGetProjects } from '../hooks/useGetProjects';
 
 const style = {
   position: 'absolute',
@@ -29,6 +29,13 @@ const style = {
   p: 4,
 };
 
+type EditProjectInput = {
+    id: string;
+    name: string;
+    userId: string;
+    description: string;
+};
+
 export const UpdateProjectSchema = ProjectSchema.omit({
     createdAt: true,
     updatedAt: true,
@@ -37,7 +44,7 @@ export const UpdateProjectSchema = ProjectSchema.omit({
 export default function EditProject() {
     const { handleClickProject } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
-    const [loading, setLoading] = React.useState(false);
+    //const [loading, setLoading] = React.useState(false);
 
     const params = useParams({ strict: false });
     const { id } = params;
@@ -46,23 +53,29 @@ export default function EditProject() {
     const userId = user?.id
     //console.log("EPM user:", userId);
 
-    const methods = useForm({
+    const { data: projects } = useGetProjects(userId);
+    const currentProject = projects?.find((p) => p.id === id);
+
+    const methods = useForm<EditProjectInput>({
         resolver: zodResolver(UpdateProjectSchema),
         mode: "onChange",
-        defaultValues: {
-            id: id,
-            name: "",
-            userId: userId,
-            description: ""
-        }
+        values: {
+            id: id || "",
+            name: currentProject?.name || "", // Fallback to empty string while loading
+            userId: userId || "",
+            description: currentProject?.description || ""
+        },
+        resetOptions: {
+            keepDirtyValues: true, // Don't overwrite what the user is currently typing
+        },
     });
 
     const patchMutation = usePatchProjects();
 
     // async to help execute and handle error
-    const onSubmit = async (projectData: Project) => {
+    const onSubmit = async (projectData: EditProjectInput) => {
         setError(null);
-        setLoading(true);
+        //setLoading(true);
 
         try {
             console.log("Saving to Firebase:", projectData);
@@ -71,9 +84,9 @@ export default function EditProject() {
                 payload: {name: projectData.name, description: projectData.description}
             });
 
-            setLoading(false);
+            //setLoading(false);
         } catch (err: any) {
-            setLoading(false);
+            //setLoading(false);
             setError("Failed to create project. Please check your inputs.");
         }
     };
@@ -93,40 +106,41 @@ export default function EditProject() {
                     Edit project
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <FormControl>
-                    <FormLabel htmlFor="name">Project Name</FormLabel>
-                    <TextField
-                        {...methods.register("name")}
-                        error={!!methods.formState.errors.name}
-                        helperText={methods.formState.errors.name ? methods.formState.errors.name.message : ""}
-                        required
-                        label="Name"
-                    />
-                </FormControl> 
-                <FormControl>
-                    <FormLabel htmlFor="description">Project Overview</FormLabel>
-                    <TextField
-                        {...methods.register("description")}
-                        error={!!methods.formState.errors.description}
-                        helperText={methods.formState.errors.description ? methods.formState.errors.description.message : ""}
-                        required
-                        label="Description"
-                    />
-                </FormControl>
-                <Button 
-                    variant="contained" 
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? "Saving..." : "Save Changes"}
-                </Button>
-                <Button 
-                    type="button"
-                    onClick={() => handleClickProject(id)} 
-                    disabled={loading} 
-                >
-                    Cancel
-                </Button>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("name")}
+                            error={!!methods.formState.errors.name}
+                            helperText={methods.formState.errors.name ? methods.formState.errors.name.message : ""}
+                            required
+                            label="Project name"
+                        />
+                    </FormControl> 
+                    <FormControl>
+                        <TextField
+                            {...methods.register("description")}
+                            error={!!methods.formState.errors.description}
+                            helperText={methods.formState.errors.description ? methods.formState.errors.description.message : ""}
+                            required
+                            label="Description"
+                        />
+                    </FormControl>
+                    <Button 
+                        variant="contained" 
+                        type="submit"
+                        disabled={patchMutation.isPending}
+                    >
+                        {patchMutation.isPending ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button 
+                        variant="text"
+                        type="button"
+                        onClick={() => handleClickProject(id)} 
+                        disabled={patchMutation.isPending} 
+                    >
+                        Cancel
+                    </Button>
+                </Box>
             </Box>
         </Modal>
         </div>

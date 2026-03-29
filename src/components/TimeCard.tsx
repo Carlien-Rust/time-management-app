@@ -14,7 +14,6 @@ export default function TimeCard() {
 
     const params = useParams({ strict: false });
     const { id } = params; // projectId
-    console.log("TC projectId:", id);
 
     const { data: timeData, isLoading, isError, refetch } = useGetTimeLogsByProjectId(id);
 
@@ -25,8 +24,7 @@ export default function TimeCard() {
         console.log("Refreshing encryption servers...");
     };
 
-    if (isLoading) return <Typography>Loading Time Data...</Typography>;
-    if (isError) return <Typography>No Project ID provided.</Typography>;
+    if (!id) return <Typography>No Project ID provided.</Typography>;
     if (id && isError) {
         return (
         <Box>
@@ -35,10 +33,7 @@ export default function TimeCard() {
         </Box>
         );
     }
-    if (!id) {
-        return <Typography>Error: No Project ID provided.</Typography>;
-    }
-    if (!timeData || timeData.length === 0) {
+    if (!isLoading && (!timeData || timeData.length === 0)) {
         return (
             <Container>
                 <Typography variant="h6">Time Entries</Typography>
@@ -59,6 +54,9 @@ export default function TimeCard() {
                 < TimeLogTable
                     logs={timeData || []} 
                     projectId={id}
+                    isLoading={isLoading}
+                    isError={isError}
+                    refetch={refetch}
                 />
                 <CardActions>
                     <Button 

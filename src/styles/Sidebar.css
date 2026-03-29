@@ -1,8 +1,23 @@
-.sidebar {
-  background-color: #333;
-  color: white;
+/* Sidebar.css */
+.sidebar-drawer {
+  background-color: #ffffff;
+  border-right: 1px solid var(--border);
 }
-.main-content {
-  flex-grow: 1;
+/* Hide the scrollbar but keep functionality */
+.sidebar-drawer::-webkit-scrollbar {
+  display: none; 
 }
 
+/* Custom styles for the active project highlight */
+.Mui-selected {
+  background-color: rgba(12, 163, 245, 0.08) !important; /* Primary light alpha */
+  color: #0ca3f5;
+  font-weight: bold;
+  border-right: 4px solid #0ca3f5;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}

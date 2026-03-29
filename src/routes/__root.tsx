@@ -6,49 +6,65 @@ import { createRootRouteWithContext, Outlet, useNavigate } from '@tanstack/react
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import { Box, Toolbar } from '@mui/material';
+import { Box, Toolbar, CircularProgress } from '@mui/material';
 import { useEffect } from 'react';
 import { useNavigationManager } from '../services/navigationManager';
+import { useAuth } from '../services/auth_services/AuthProvider';
 
 export const Route = createRootRouteWithContext<any>()({
   component: RootLayout,
 });
 
 function RootLayout() {
-  const { auth } = Route.useRouteContext();
+  const auth = useAuth();
   const navigate = useNavigate();
-  const { handleLogout } = useNavigationManager();
 
-  // Redirect Logic:
   useEffect(() => {
+    // If user becomes null, jump to login immediately
     if (!auth.loading && !auth.user) {
-      // Check already on login/signup to avoid infinite loops
       const path = window.location.pathname;
-      if (path !== '/login' && path !== '/signup') {handleLogout}
+      if (path !== '/login' && path !== '/signup') {
+        navigate({ to: '/login' });
+      }
     }
   }, [auth.user, auth.loading, navigate]);
 
-  /*
-  // Checking Firebase (Show nothing or a spinner)
-  if (auth.loading) return null;
+  // Checking Firebase (Show a spinner)
+ if (auth.loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   // No User (Render Login/Signup without Sidebar/Header)
   if (!auth.user) {
+    console.log("No user found - Rendering clean page");
     return (
       <>
-        <Outlet />
-        <TanStackRouterDevtools /> 
+        <Outlet /> 
+        <TanStackRouterDevtools />
       </>
     );
   }
-  */
 
   // Authenticated
+  console.log("User found:", auth.user.email);
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { sm: `calc(100% - 120)` }}}>
       <Header />
       <Sidebar />
-      <Box>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 4,
+          backgroundColor: 'background.default',
+          minHeight: '100vh',
+          width: { sm: `calc(100% - 240px)` }, // Adjust 240px to your Sidebar width
+        }}
+      >
         <Toolbar /> 
         <Outlet />
       </Box>

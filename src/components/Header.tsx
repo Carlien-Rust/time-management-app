@@ -15,12 +15,13 @@ import { AppBar, Box, Typography, IconButton, Menu, MenuItem, Toolbar } from '@m
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import icon from  "../../public/icon.png"
 import { useNavigationManager } from "../services/navigationManager";
+import { useAuth } from '../services/auth_services/AuthProvider';
 
 export default function Header() {
-  const [auth, setAuth] = React.useState(true);
+  const [auth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const { handleProfile, handleReset, handleLogout } = useNavigationManager();
+  const { handleProfile, handleReset } = useNavigationManager();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -29,6 +30,16 @@ export default function Header() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const { logout } = useAuth();
+  
+  const handleSignOut = async () => {
+  try {
+    await logout();
+  } catch (error) {
+    console.error("Logout failed", error);
+  }
+};
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -74,7 +85,7 @@ export default function Header() {
               >
                 <MenuItem onClick={handleProfile}>Profile</MenuItem> {/* show username and email */}
                 <MenuItem onClick={handleReset}>Reset password</MenuItem>
-                <MenuItem onClick={handleLogout}>Log out</MenuItem>
+                <MenuItem onClick={handleSignOut}>Log out</MenuItem>
               </Menu>
             </div>
           )}

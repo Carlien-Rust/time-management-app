@@ -9,7 +9,7 @@ Hook: usePostProjects();
 */
 
 import * as React from 'react';
-import { Box, Typography, Modal, TextField , Button, Alert, FormLabel, FormControl } from '@mui/material';
+import { Box, Typography, Modal, TextField , Button, Alert, FormControl } from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
 import { usePostProjects } from "../hooks/usePostProjects";
 import { useUserStore } from "../store/user/UserStore";
@@ -37,7 +37,7 @@ export const CreateProjectSchema = ProjectSchema.omit({
 export default function AddProject() {
     const { handleClickOverview } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
-    const [loading, setLoading] = React.useState(false);
+    //const [loading, setLoading] = React.useState(false);
 
     const user = useUserStore((state) => state.user);
     const userId = user?.id
@@ -57,9 +57,8 @@ export default function AddProject() {
    
     // async to help execute and handle error
     const onSubmit = async (data: Project) => {
-        setLoading(true);
+        //setLoading(true);
         setError(null);
-        // alert("Form is valid! Attempting to save..."); // If you don't see this, the problem is Zod validation.
         // console.log("Payload:", projectData);
 
         try {
@@ -70,9 +69,9 @@ export default function AddProject() {
                 description: data.description
             });
             
-            setLoading(false);
+            //setLoading(false);
         } catch (err: any) {
-            setLoading(false);
+            //setLoading(false);
             setError("Failed to create project. Please check your inputs.");
         }
     };
@@ -88,49 +87,48 @@ export default function AddProject() {
                     Add new project
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <FormControl>
-                    <FormLabel htmlFor="name">Project Name</FormLabel>
-                    <TextField
-                        {...methods.register("name")}
-                        error={!!methods.formState.errors.name}
-                        helperText={methods.formState.errors.name ? methods.formState.errors.name.message : ""}
-                        required
-                        label="name"
-                    />
-                </FormControl> 
-                <FormControl>
-                    <FormLabel htmlFor="userId">User Id</FormLabel> 
-                    <TextField
-                        {...methods.register("userId")}
-                        error={!!methods.formState.errors.userId}
-                        helperText={methods.formState.errors.userId ? methods.formState.errors.userId.message : ""}
-                        label="userId"
-                    />
-                </FormControl> 
-                <FormControl>
-                    <FormLabel htmlFor="description">Project Overview</FormLabel>
-                    <TextField
-                        {...methods.register("description")}
-                        error={!!methods.formState.errors.description}
-                        helperText={methods.formState.errors.description ? methods.formState.errors.description.message : ""}
-                        required
-                        label="description"
-                    />
-                </FormControl>
-                <Button 
-                    type="button"
-                    onClick={handleClickOverview} 
-                    disabled={loading} 
-                >
-                    Cancel
-                </Button>
-                <Button 
-                    variant="contained" 
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? "Creating..." : "Create Project"}
-                </Button>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("name")}
+                            error={!!methods.formState.errors.name}
+                            helperText={methods.formState.errors.name ? methods.formState.errors.name.message : ""}
+                            required
+                            label="Project name"
+                        />
+                    </FormControl> 
+                    <FormControl>
+                        <TextField
+                            {...methods.register("userId")}
+                            error={!!methods.formState.errors.userId}
+                            helperText={methods.formState.errors.userId ? methods.formState.errors.userId.message : ""}
+                            label="User ID"
+                        />
+                    </FormControl> 
+                    <FormControl>
+                        <TextField
+                            {...methods.register("description")}
+                            error={!!methods.formState.errors.description}
+                            helperText={methods.formState.errors.description ? methods.formState.errors.description.message : ""}
+                            required
+                            label="Description"
+                        />
+                    </FormControl>
+                    <Button 
+                        variant="contained" 
+                        type="submit"
+                        disabled={postMutation.isPending}
+                    >
+                        {postMutation.isPending ? "Creating..." : "Create Project"}
+                    </Button>
+                    <Button 
+                        type="button"
+                        onClick={handleClickOverview} 
+                        disabled={postMutation.isPending} 
+                    >
+                        Cancel
+                    </Button>
+                </Box>
             </Box>
         </Modal>
         </div>

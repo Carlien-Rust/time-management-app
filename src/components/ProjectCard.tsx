@@ -27,14 +27,14 @@ import { Container, CardActions, Button, Box, Typography } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
 import { useUserStore } from "../store/user/UserStore";
-import { useParams } from "@tanstack/react-router";
+import { useLocation, useParams } from "@tanstack/react-router";
 import { useGetProjects } from "../hooks/useGetProjects";
 import { useDeleteProject } from "../hooks/useDeleteProject"; 
 
 export default function ProjectCard() {
 
     const defaultTheme = createTheme();
-
+    const location = useLocation();
     // IDs
     // projectId
     const params = useParams({ strict: false }); 
@@ -42,6 +42,9 @@ export default function ProjectCard() {
     // userId
     const user = useUserStore((state) => state.user);
     const userId = user?.id
+
+    const isViewingTimeLogs = location.pathname.includes(`/add-time`) || 
+                              location.pathname.includes(`/add-new-time`);
 
     // Returns array
     const { data: allProjects, isLoading, isError, refetch } = useGetProjects(userId);
@@ -96,8 +99,9 @@ export default function ProjectCard() {
                         size="small" 
                         variant="contained" 
                         onClick={() => handleTimeEntry(id)}
+                        disabled={isViewingTimeLogs}
                     >
-                        Log Time
+                        View Time Logs
                     </Button>
                     <Button 
                         size="small" 

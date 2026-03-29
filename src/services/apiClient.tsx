@@ -16,12 +16,11 @@ apiClient.interceptors.request.use(async (config) => {
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log("Token attached to header successfully.");
+      //console.log("Token attached to header successfully.");
     } else if (user) {
 
-      const idToken = await user.getIdToken();
-      
-      console.log("Adding Token to Header...");
+      const idToken = await user.getIdToken(true);
+      //console.log("Adding Token to Header...");
       config.headers.Authorization = `Bearer ${idToken}`;
     }
   } catch (error) {

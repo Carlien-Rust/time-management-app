@@ -24,8 +24,8 @@ export default function Sidebar() {
   
   const user = useUserStore((state) => state.user);
 
-  const params = useParams({ strict: false }) as { projectId?: string }; // URL params
-  const activeProjectId = params.projectId;
+  const params = useParams({ strict: false }); // URL params
+  const activeProjectId = params.id;
 
   const { data: projects, isLoading, isError } = useGetProjects(user?.id as string);
 
@@ -50,11 +50,42 @@ export default function Sidebar() {
         <Divider />
         <List>
           {/* STATIC ITEMS (Always there) */}
-          <ListItemButton onClick={handleAddProject}>
+          <ListItemButton 
+            onClick={handleAddProject}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: 'action.selected',
+                borderRight: '4px solid primary.main',
+                '& .MuiTypography-root': {
+                  fontWeight: 'bold',
+                  color: 'primary.main',
+                },
+              },
+              '&.Mui-selected:hover': {
+                backgroundColor: 'action.hover',
+              },
+            }}
+          >
             <ListItemText primary="+ New Project" />
           </ListItemButton>
 
-          <ListItemButton onClick={handleClickOverview} selected={!activeProjectId}>
+          <ListItemButton 
+            onClick={handleClickOverview} 
+            selected={!activeProjectId}
+            sx={{
+              '&.Mui-selected': {
+                backgroundColor: 'action.selected',
+                borderRight: '4px solid primary.main',
+                '& .MuiTypography-root': {
+                  fontWeight: 'bold',
+                  color: 'primary.main',
+                },
+              },
+              '&.Mui-selected:hover': {
+                backgroundColor: 'action.hover',
+              },
+            }}
+          >
             <ListItemText primary="Overview" />
           </ListItemButton>
 
@@ -69,6 +100,19 @@ export default function Sidebar() {
                 key={project.id} 
                 onClick={() => handleClickProject(project.id)}
                 selected={activeProjectId === project.id}
+                sx={{
+                  '&.Mui-selected': {
+                    backgroundColor: 'action.selected',
+                    borderRight: '4px solid primary.main',
+                    '& .MuiTypography-root': {
+                      fontWeight: 'bold',
+                      color: 'primary.main',
+                    },
+                  },
+                  '&.Mui-selected:hover': {
+                    backgroundColor: 'action.hover',
+                  },
+                }}
               >
                 <ListItemText primary={project.name} />
               </ListItemButton>

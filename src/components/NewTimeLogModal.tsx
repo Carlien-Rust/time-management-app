@@ -8,7 +8,7 @@ Form fields validated.
 */
 
 import * as React from 'react';
-import {Box, Typography, Modal, TextField , Button, Alert, FormControl, FormLabel} from '@mui/material';
+import {Box, Typography, Modal, TextField , Button, Alert, FormControl} from '@mui/material';
 import { useNavigationManager } from "../services/navigationManager";
 import { useSearch } from "@tanstack/react-router";
 import { usePostTimeLogs } from "../hooks/usePostTimeLogs";
@@ -36,7 +36,7 @@ export const CreateTimeLogSchema = TimeSchema.omit({
 export default function AddTimeLog() {
     const { handleTimeEntry } = useNavigationManager();
     const [error, setError] = React.useState<string | null>(null);
-    const [loading, setLoading] = React.useState(false);
+    //const [loading, setLoading] = React.useState(false);
 
     const search = useSearch({ strict: false });
     const id = search.projectId; 
@@ -62,7 +62,7 @@ export default function AddTimeLog() {
 
     // async to help execute and handle error
     const onSubmit = async (timeData: any) => {
-        setLoading(true);
+        //setLoading(true);
         setError(null);
 
         try {
@@ -78,9 +78,9 @@ export default function AddTimeLog() {
                 }
             );
      
-            setLoading(false);
+            //setLoading(false);
         } catch (err: any) {
-            setLoading(false);
+            //setLoading(false);
             setError("Failed to create project. Please check your inputs.");
         }
     };
@@ -100,70 +100,67 @@ export default function AddTimeLog() {
                     Log new time
                 </Typography>
                 {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                <FormControl>
-                    <FormLabel htmlFor="projectId">Project ID</FormLabel>
-                    <TextField
-                        {...methods.register("projectId")}
-                        error={!!methods.formState.errors.projectId}
-                        helperText={methods.formState.errors.projectId ? methods.formState.errors.projectId.message : ""}
-                        required
-                        label="Project ID"
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel htmlFor="date">Date</FormLabel>
-                    <TextField
-                        {...methods.register("date")}
-                        error={!!methods.formState.errors.date}
-                        helperText={methods.formState.errors.date ? methods.formState.errors.date.message : ""}
-                        required
-                        label="Date"
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel htmlFor="hours">Hours</FormLabel>
-                    <TextField
-                        {...methods.register("hours")}
-                        error={!!methods.formState.errors.hours}
-                        helperText={methods.formState.errors.hours ? methods.formState.errors.hours.message : ""}
-                        required
-                        label="Hours"
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel htmlFor="minutes">Minutes</FormLabel>
-                    <TextField
-                        {...methods.register("minutes")}
-                        error={!!methods.formState.errors.minutes}
-                        helperText={methods.formState.errors.minutes ? methods.formState.errors.minutes.message : ""}
-                        required
-                        label="Minutes"
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel htmlFor="notes">Notes</FormLabel>
-                    <TextField
-                        {...methods.register("notes")}
-                        error={!!methods.formState.errors.notes}
-                        helperText={methods.formState.errors.notes ? methods.formState.errors.notes.message : ""}
-                        required
-                        label="notes"
-                    />
-                </FormControl>
-                <Button 
-                    type="button"
-                    onClick={() => handleTimeEntry(id)} 
-                    disabled={loading} 
-                >
-                    Cancel
-                </Button>
-                <Button 
-                    variant="contained" 
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? "Logging..." : "Log Time"}
-                </Button>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("projectId")}
+                            error={!!methods.formState.errors.projectId}
+                            helperText={methods.formState.errors.projectId ? methods.formState.errors.projectId.message : ""}
+                            required
+                            label="Project ID"
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("date")}
+                            error={!!methods.formState.errors.date}
+                            helperText={methods.formState.errors.date ? methods.formState.errors.date.message : ""}
+                            required
+                            label="Date"
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("hours")}
+                            error={!!methods.formState.errors.hours}
+                            helperText={methods.formState.errors.hours ? methods.formState.errors.hours.message : ""}
+                            required
+                            label="Hours"
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("minutes")}
+                            error={!!methods.formState.errors.minutes}
+                            helperText={methods.formState.errors.minutes ? methods.formState.errors.minutes.message : ""}
+                            required
+                            label="Minutes"
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            {...methods.register("notes")}
+                            error={!!methods.formState.errors.notes}
+                            helperText={methods.formState.errors.notes ? methods.formState.errors.notes.message : ""}
+                            required
+                            label="Notes"
+                        />
+                    </FormControl>
+                    <Button 
+                        variant="contained" 
+                        type="submit"
+                        disabled={postMutation.isPending}
+                    >
+                        {postMutation.isPending ? "Logging..." : "Log Time"}
+                    </Button>
+                    <Button 
+                        type="button"
+                        onClick={() => handleTimeEntry(id)} 
+                        disabled={postMutation.isPending} 
+                    >
+                        Cancel
+                    </Button>
+                </Box>
             </Box>
         </Modal>
         </div>
