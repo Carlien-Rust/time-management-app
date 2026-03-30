@@ -19,14 +19,6 @@ Project Management: Create and edit projects so every entry is neatly organised 
 Quick Manual Time Entry: Add hours and seconds with a compact form—select project, pick date, enter duration, hit save.
 Built-In Reports: See cards (total hours), bar chart and more data on project overview reports.
 
-### Additional Features:
-
-Dark-Mode Toggle: Switch themes instantly—ideal for late-night logging.
-Export: Generate a report for the projects to export. 
-
-**Weekly Overview Calendar:**  Seven-day grid highlights daily totals and gaps, giving you an at-a-glance health check of the week.
-Wireframe
-
 https://miro.com/app/board/uXjVInb6qVk=/?share_link_id=508494436071
 
 ## Project Stack
@@ -52,26 +44,49 @@ npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mu
 ├── assets
 │   ├── hero.png
 │   ├── react.svg
+│   ├── time.png
 │   └── vite.svg
 ├── components
 │   ├── EditProjectModal.tsx
 │   ├── EditTimeLogModal.tsx
 │   ├── Header.tsx
+│   ├── KPICards.tsx
 │   ├── NewProjectModal.tsx
 │   ├── NewTimeLogModal.tsx
 │   ├── ProfileCard.tsx
 │   ├── ProjectCard.tsx
+│   ├── ProjectPercentageChart.tsx
 │   ├── Sidebar.tsx
 │   ├── TimeCard.tsx
+│   ├── TimeChart.tsx
 │   └── TimeLogTable.tsx
 ├── hooks
-│   ├── useGetIds.tsx
-│   └── useGetTime.tsx
+│   ├── useDeleteProject.tsx
+│   ├── useDeleteTimeLogs.tsx
+│   ├── useGetProjects.tsx
+│   ├── useGetTimeLogsByProjectId.tsx
+│   ├── useGetTimeLogsByUserId.tsx
+│   ├── useGetUsers.tsx
+│   ├── usePatchProject.tsx
+│   ├── usePatchTimeLogs.tsx
+│   ├── usePostAuth.tsx
+│   ├── usePostProjects.tsx
+│   ├── usePostTimeLogs.tsx
+│   └── usePostUser.tsx
 ├── index.css
 ├── main.tsx
 ├── mockData
 │   ├── projects.ts
 │   └── timeLog.ts
+├── models
+│   ├── auth.schema.ts
+│   ├── auth.types.ts
+│   ├── projects.schema.ts
+│   ├── projects.types.ts
+│   ├── timelogs.schema.ts
+│   ├── timelogs.types.ts
+│   ├── users.schema.ts
+│   └── users.types.ts
 ├── pages
 │   ├── DashboardPage.tsx
 │   ├── ProfilePage.tsx
@@ -91,18 +106,34 @@ npm install @mui/material @emotion/react @emotion/styled @mui/icons-material @mu
 │   ├── profile.tsx
 │   ├── project
 │   │   ├── $id
+│   │   │   ├── add-time.tsx
+│   │   │   └── edit-project.tsx
 │   │   └── $id.tsx
 │   ├── register.tsx
-│   └── reset.tsx
+│   ├── reset.tsx
+│   └── timeEntries
+│       ├── add-new-time.tsx
+│       └── edit-time.tsx
 ├── services
+│   ├── apiClient.tsx
+│   ├── auth.services.tsx
 │   ├── auth_services
 │   │   ├── AuthProvider.tsx
 │   │   ├── config
+│   │   │   └── firebaseConfig.ts
 │   │   └── context
-│   └── navigationManager.tsx
+│   │       └── AuthContext.tsx
+│   ├── navigationManager.tsx
+│   ├── project.services.tsx
+│   ├── timelogs.services.tsx
+│   └── users.services.tsx
+├── store
+│   └── user
+│       └── UserStore.tsx
 └── styles
     ├── Sidebar.css
     ├── ThemeProvider.tsx
+    ├── chartHelpers.tsx
     ├── core
     │   ├── breakpoints.ts
     │   ├── index.ts

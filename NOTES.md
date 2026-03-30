@@ -82,8 +82,6 @@ We follow the **CQRS Pattern** (Command Query Responsibility Segregation).
     * **On Success:** Use `onSuccess` callbacks to "Invalidate" the query key, forcing the app to fetch the fresh truth immediately.
 * **`isLoading` (Layout Shift):** Use **Skeletons over Spinners** (e.g., `[...Array(n)]`) to reserve layout space and prevent "Jumping UI."
 
-
-
 ---
 
 ## 🚀 The Developer "Cheatsheet"
