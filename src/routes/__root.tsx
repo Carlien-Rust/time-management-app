@@ -2,32 +2,24 @@
 Need to add conditional rendering - struggled with this
 */
 
-import { createRootRouteWithContext, Outlet, useNavigate } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import { Box, Toolbar, CircularProgress } from '@mui/material';
-import { useEffect } from 'react';
-import { useNavigationManager } from '../services/navigationManager';
 import { useAuth } from '../services/auth_services/AuthProvider';
+interface MyRouterContext {
+  auth: ReturnType<typeof useAuth>;
+}
 
-export const Route = createRootRouteWithContext<any>()({
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: RootLayout,
 });
 
 function RootLayout() {
   const auth = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // If user becomes null, jump to login immediately
-    if (!auth.loading && !auth.user) {
-      const path = window.location.pathname;
-      if (path !== '/login' && path !== '/signup') {
-        navigate({ to: '/login' });
-      }
-    }
-  }, [auth.user, auth.loading, navigate]);
+  // const navigate = useNavigate();
+  const routerState = useRouterState();
 
   // Checking Firebase (Show a spinner)
  if (auth.loading) {
@@ -38,21 +30,29 @@ function RootLayout() {
     );
   }
 
+  const authPages = ['/login', '/register', '/reset', '/'];
+  const isAuthPage = authPages.includes(routerState.location.pathname);
+
   // No User (Render Login/Signup without Sidebar/Header)
-  if (!auth.user) {
-    console.log("No user found - Rendering clean page");
+  if (!auth.user || isAuthPage) {
     return (
-      <>
+      <Box component="main" sx={{ width: '100vw', height: '100vh' }}>
         <Outlet /> 
         <TanStackRouterDevtools />
-      </>
+      </Box>
     );
   }
 
   // Authenticated
-  console.log("User found:", auth.user.email);
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: { sm: `calc(100% - 120)` }}}>
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        width: { sm: `calc(100% - 120)`},
+      }}
+      >
       <Header />
       <Sidebar />
       <Box

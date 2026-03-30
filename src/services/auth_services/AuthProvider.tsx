@@ -20,6 +20,7 @@ import {
   signOut,
   type User, 
   sendPasswordResetEmail,
+  updatePassword,
   type Auth,
 } from 'firebase/auth';
 import { auth } from './config/firebaseConfig'; 
@@ -30,11 +31,9 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const login = async (email: string, pass: string) => {
+  const login = async (email: string, pass: string): Promise<User> => {
     const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-    const fbUser = userCredential.user;
-    //console.log("fbUser in AuthProvider:", fbUser);
-    return userCredential;
+    return userCredential.user;
   };
 
   // Update to work with Firebase and BE database - struggled with this
@@ -56,8 +55,13 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
       return fbUser;
   };
 
-  const resetPass = (auth: Auth, pass: string) => {
-    return sendPasswordResetEmail(auth, pass);
+  const resetPass = async (newPass: string): Promise<void> => {
+    if (!auth.currentUser) throw new Error("No authenticated user found");
+    return updatePassword(auth.currentUser, newPass);
+  };
+
+  const forgotPassword = async (email: string): Promise<void> => {
+    return sendPasswordResetEmail(auth, email);
   };
 
   const logout = () => {
@@ -75,7 +79,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, resetPass, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, resetPass, forgotPassword, logout }}>
       {!loading && children} 
     </AuthContext.Provider>
   );

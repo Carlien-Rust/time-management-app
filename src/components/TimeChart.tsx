@@ -35,7 +35,7 @@ export function TimeChart({ logs, projects }: { logs: TimeLogs[], projects: any[
         }}>
             {/* If many projects, force a minimum width to enable scrolling */}
             <Box sx={{ minWidth: chartData.length > 8 ? 1000 : '100%', height: '100%' }}>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                     <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="name" fontSize={12} tickMargin={10} />

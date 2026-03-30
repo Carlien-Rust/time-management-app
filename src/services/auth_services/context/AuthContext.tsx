@@ -7,14 +7,15 @@
 
 */
 import { createContext } from 'react';
-import { type Auth, type User } from 'firebase/auth';
+import { type User } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<User>; // or UserCredential
   register: (email: string, pass: string, firstName: string, lastName: string) => Promise<User>; // or UserCredential
-  resetPass: (auth: Auth, pass: string) => Promise<void>;
+  resetPass: (newPass: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -24,5 +25,6 @@ export const AuthContext = createContext<AuthContextType>({
   login: async () => { throw new Error("AuthContext not initialized"); },
   register: async () => { throw new Error("AuthContext not initialized"); },
   resetPass: async () => { throw new Error("AuthContext not initialized"); },
+  forgotPassword: async () => { throw new Error("AuthContext not initialized"); },
   logout: async () => { throw new Error("AuthContext not initialized"); },
 });

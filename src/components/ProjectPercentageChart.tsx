@@ -20,7 +20,7 @@ export function ProjectPercentageChart({ logs, projects }: Props) {
   return (
     <Paper sx={{ p: 3, borderRadius: 3, height: 400, display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h6" gutterBottom>Workload Distribution (%)</Typography>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <PieChart>
           <Pie
             data={data}
@@ -30,7 +30,7 @@ export function ProjectPercentageChart({ logs, projects }: Props) {
             outerRadius={80}
             paddingAngle={5}
             dataKey="value"
-            label={({ name, percent }) => `${name} ${(percent ? percent * 100 : 0).toFixed(0)}%`}
+            label={({ percent }) => `${(percent ? percent * 100 : 0).toFixed(0)}%`}
           >
             {data.map((entry) => {
                 const colorIndex = projects.findIndex(p => p.name === entry.name);

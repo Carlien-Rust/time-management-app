@@ -24,7 +24,6 @@ Projects with linked entries return error → toast “Cannot delete: project ha
 
 */
 import { Container, CardActions, Button, Box, Typography } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
 import { useUserStore } from "../store/user/UserStore";
 import { useLocation, useParams } from "@tanstack/react-router";
@@ -33,7 +32,6 @@ import { useDeleteProject } from "../hooks/useDeleteProject";
 
 export default function ProjectCard() {
 
-    const defaultTheme = createTheme();
     const location = useLocation();
     // IDs
     // projectId
@@ -79,39 +77,37 @@ export default function ProjectCard() {
     }
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="lg">
-                <Typography variant="h5" sx={{ color: 'text.secondary' }}>
-                {projectEntry?.name}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {projectEntry?.description}
-                </Typography>
-                <CardActions>
-                    <Button 
-                        size="small" 
-                        variant="contained" 
-                        onClick={() => handleEditProject(id)}
-                    >
-                        Edit
-                    </Button>
-                    <Button 
-                        size="small" 
-                        variant="contained" 
-                        onClick={() => handleTimeEntry(id)}
-                        disabled={isViewingTimeLogs}
-                    >
-                        View Time Logs
-                    </Button>
-                    <Button 
-                        size="small" 
-                        variant="contained"
-                        onClick={handleDelete}
-                    >
-                        Delete
-                    </Button>
-                </CardActions>
-            </Container>
-        </ThemeProvider>
+        <Container component="main" maxWidth="lg">
+            <Typography variant="h5" sx={{ color: 'text.secondary' }}>
+            {projectEntry?.name}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            {projectEntry?.description}
+            </Typography>
+            <CardActions>
+                <Button 
+                    size="small" 
+                    variant="contained" 
+                    onClick={() => handleEditProject(id)}
+                >
+                    Edit
+                </Button>
+                <Button 
+                    size="small" 
+                    variant="contained" 
+                    onClick={() => handleTimeEntry(id)}
+                    disabled={isViewingTimeLogs}
+                >
+                    View Time Logs
+                </Button>
+                <Button 
+                    size="small" 
+                    variant="contained"
+                    onClick={handleDelete}
+                >
+                    Delete
+                </Button>
+            </CardActions>
+        </Container>
     );
 }

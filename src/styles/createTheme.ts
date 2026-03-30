@@ -20,12 +20,12 @@ let theme = createTheme({
   palette: {
     mode: 'light', // or 'dark'
     primary: {
-      main: '#0ca3f5',
-      light: '#e3f2fd',
-      dark: '#0745a3',
+      main: '#a927c3',
+      light: '#da7ded',
+      dark: '#701b81',
     },
     secondary: {
-      main: '#ef7a0c',
+      main: '#5f0cef',
     },
     background: {
       default: '#f8f9fa',

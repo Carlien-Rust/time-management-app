@@ -3,14 +3,11 @@ Hook: useGetTimeLogsByProjectId();
 */
 import { Container, CardActions, Button, Typography, Alert, Box } from '@mui/material';
 import { useParams } from "@tanstack/react-router";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from '../services/navigationManager';
 import { useGetTimeLogsByProjectId } from "../hooks/useGetTimeLogsByProjectId";
 import TimeLogTable from "./TimeLogTable";
 
 export default function TimeCard() {
-
-    const defaultTheme = createTheme();
 
     const params = useParams({ strict: false });
     const { id } = params; // projectId
@@ -48,26 +45,24 @@ export default function TimeCard() {
     }
 
     return (
-        <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="lg">
-                <Typography variant="h6" sx={{ mb: 2 }}>Time Entries</Typography>
-                < TimeLogTable
-                    logs={timeData || []} 
-                    projectId={id}
-                    isLoading={isLoading}
-                    isError={isError}
-                    refetch={refetch}
-                />
-                <CardActions>
-                    <Button 
-                        size="small" 
-                        variant="contained" 
-                        onClick={() => handleAddTime(id)}
-                    >
-                        Log new time
-                    </Button>
-                </CardActions>
-            </Container>
-        </ThemeProvider>
+        <Container component="main" maxWidth="lg">
+            <Typography variant="h6" sx={{ mb: 2 }}>Time Entries</Typography>
+            < TimeLogTable
+                logs={timeData || []} 
+                projectId={id}
+                isLoading={isLoading}
+                isError={isError}
+                refetch={refetch}
+            />
+            <CardActions>
+                <Button 
+                    size="small" 
+                    variant="contained" 
+                    onClick={() => handleAddTime(id)}
+                >
+                    Log new time
+                </Button>
+            </CardActions>
+        </Container>
     );
 }

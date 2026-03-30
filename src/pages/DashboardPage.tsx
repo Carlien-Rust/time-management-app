@@ -75,18 +75,43 @@ export default function DashboardPage() {
 
             <KPICards logs={filteredLogs} isLoading={isLoading} />
 
-            <Paper sx={{ p: 3, mb: 4, borderRadius: 3 }}>
-                <Typography variant="h6" gutterBottom>Hours per Project</Typography>
-                <Box sx={{ overflowX: 'auto' }}>
-                    <TimeChart logs={filteredLogs} projects={projects || []} />
-                </Box>
-            </Paper>
-            
-            <Grid>
-                <ProjectPercentageChart logs={filteredLogs} projects={projects || []} />
-            </Grid>
+            <Box 
+                sx={{ 
+                    display: 'flex', 
+                    flexDirection: { xs: 'column', md: 'row' }, // Stack on mobile, row on desktop
+                    gap: 3, 
+                    mb: 4 
+                }}
+            >
+                {/* Left Side: Bar Chart (Flexible width) */}
+                <Paper 
+                    sx={{ 
+                        p: 3, 
+                        borderRadius: 3, 
+                        flex: { xs: '1 1 auto', md: '2' }, // Takes 2/3 of space on desktop
+                        minWidth: 0 // Prevents chart overflow
+                    }}
+                >
+                    <Typography variant="h6" gutterBottom>Hours per Project</Typography>
+                    <Box sx={{ height: 400 }}>
+                        <TimeChart logs={filteredLogs} projects={projects || []} />
+                    </Box>
+                </Paper>
 
-            <Typography variant="h6" gutterBottom>Detailed Time Logs</Typography>
+                {/* Right Side: Pie Chart (Fixed width/Smaller flex) */}
+                <Paper 
+                    sx={{ 
+                        p: 3, 
+                        borderRadius: 3, 
+                        flex: { xs: '1 1 auto', md: '1' }, // Takes 1/3 of space on desktop
+                        minWidth: { md: '300px' } // Ensures the Pie chart doesn't get too squished
+                    }}
+                >
+                    <ProjectPercentageChart logs={filteredLogs} projects={projects || []} />
+                </Paper>
+            </Box>
+
+            <Typography variant="h6" gutterBottom>Time Log Overview</Typography>
             <TimeLogTable 
                 logs={filteredLogs}
                 projects={projects || []}

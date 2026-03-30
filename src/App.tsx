@@ -32,7 +32,6 @@ function InnerApp() {
 }
 
 function App() {
-  
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

@@ -16,9 +16,8 @@ Session Persistence: The user stays logged in after page reload or browser resta
 */
 
 import * as React from 'react';
-import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Alert, FormLabel, FormControl, IconButton, InputAdornment } from '@mui/material';
+import { Avatar, Button, CssBaseline, TextField, FormControlLabel, Checkbox, Box, Typography, Container, Alert, FormControl, IconButton, InputAdornment } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigationManager } from "../../services/navigationManager";
 import { usePostAuth } from '../../hooks/usePostAuth';
 import {z} from "zod";
@@ -28,8 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from 'react-hook-form';
 import { useUserStore } from '../../store/user/UserStore';
 import { UserService } from "../../services/users.services";
-
-const defaultTheme = createTheme();
+import { useAuth } from '../../services/auth_services/AuthProvider';
 
 const LoginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -40,12 +38,13 @@ type LoginInputs = z.infer<typeof LoginSchema>;
 
 export default function LoginPage() {
 
+  //Login
   const methods = useForm<LoginInputs>({
       resolver: zodResolver(LoginSchema),
       mode: "onChange",
   });
 
-  const { handleRegister, handleReset, handleClickOverview } = useNavigationManager();
+  const { handleRegister, handleClickOverview } = useNavigationManager();
   const loginMutation = usePostAuth();
 
   const [error, setError] = React.useState<string | null>(null);
@@ -89,89 +88,113 @@ export default function LoginPage() {
     }
   };
 
+  // Forget Password
+  const { forgotPassword } = useAuth();
+  const { getValues } = methods; // Access current form values
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+
+  const handleForgotPassword = async () => {
+    const email = getValues("email"); // Get email from the input field
+    
+    if (!email) {
+      setError("Please enter your email address first.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await forgotPassword(email);
+      setInfoMessage("Reset link sent! Please check your inbox.");
+      setError(null);
+    } catch (err: any) {
+      setError("Could not send reset email. Check if the address is correct.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 return (
-  <ThemeProvider theme={defaultTheme}>
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
-        <Box component="form" onSubmit={methods.handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-          <FormControl>
-            <FormLabel htmlFor="email">Email</FormLabel> 
-            <TextField
-              {...methods.register("email")}
-              error={!!methods.formState.errors.email}
-              helperText={methods.formState.errors.email ? methods.formState.errors.email.message : ""}
-              required
-              label="Email Address"
-              placeholder="your@email.com"
-              autoComplete="email"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="password">Password</FormLabel>  
-            <TextField
-              {...methods.register("password", { pattern: /^[A-Za-z]+$/i })}
-              error={!!methods.formState.errors.password}
-              helperText={methods.formState.errors.password ? methods.formState.errors.password.message : ""}
-              required
-              type={showPassword ? "text" : "password"}
-              label="password"
-              placeholder="Enter your password"
-              autoComplete="current-password"
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label={showPassword ? "Hide password visibility" : "Show password visibility"}
-                        onClick={() => setShowPassword((show) => !show)}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          </FormControl> 
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            type="submit"
+  <Container component="main" maxWidth="xs">
+    <CssBaseline />
+    <Box
+      sx={{
+        marginTop: 8,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <Box component="form" onSubmit={methods.handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {infoMessage && <Alert severity="info" sx={{ mb: 2 }}>{infoMessage}</Alert>}
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <TextField
+            {...methods.register("email")}
+            error={!!methods.formState.errors.email}
+            helperText={methods.formState.errors.email ? methods.formState.errors.email.message : ""}
+            required
             fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={loading}
-            //onClick={handleClickOverview} 
-          >
-            {loading ? "Signing In..." : "Sign In"}
-          </Button>
-          <Button onClick={handleReset} fullWidth variant="text">
-            Forgot password?
-          </Button>
-          <Button onClick={handleRegister} fullWidth variant="text">
-            Don't have an account? Sign Up
-          </Button>
-        </Box>
+            label="Email Address"
+            placeholder="your@email.com"
+            autoComplete="email"
+          />
+        </FormControl>
+        <FormControl fullWidth sx={{ mb: 2 }}> 
+          <TextField
+            {...methods.register("password", { pattern: /^[A-Za-z]+$/i })}
+            error={!!methods.formState.errors.password}
+            helperText={methods.formState.errors.password ? methods.formState.errors.password.message : ""}
+            required
+            fullWidth
+            type={showPassword ? "text" : "password"}
+            label="password"
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPassword ? "Hide password visibility" : "Show password visibility"}
+                      onClick={() => setShowPassword((show) => !show)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </FormControl> 
+        <FormControlLabel
+          control={<Checkbox value="remember" color="primary" />}
+          label="Remember me"
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+          disabled={loading}
+          //onClick={handleClickOverview} 
+        >
+          {loading ? "Signing In..." : "Sign In"}
+        </Button>
+        <Button onClick={handleForgotPassword} fullWidth variant="text">
+          Forgot password?
+        </Button>
+        <Button onClick={handleRegister} fullWidth variant="text">
+          Don't have an account? Sign Up
+        </Button>
       </Box>
-    </Container>
-  </ThemeProvider>
+    </Box>
+  </Container>
 );
 }

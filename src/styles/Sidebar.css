@@ -11,9 +11,9 @@
 /* Custom styles for the active project highlight */
 .Mui-selected {
   background-color: rgba(12, 163, 245, 0.08) !important; /* Primary light alpha */
-  color: #0ca3f5;
+  color: #a927c3;
   font-weight: bold;
-  border-right: 4px solid #0ca3f5;
+  border-right: 4px solid #832a95;
 }
 
 .sidebar-footer {

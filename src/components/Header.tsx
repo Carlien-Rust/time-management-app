@@ -13,7 +13,6 @@ After logout, refreshing the page stays on /login
 import * as React from 'react';
 import { AppBar, Box, Typography, IconButton, Menu, MenuItem, Toolbar } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import icon from  "../../public/icon.png"
 import { useNavigationManager } from "../services/navigationManager";
 import { useAuth } from '../services/auth_services/AuthProvider';
 
@@ -21,7 +20,8 @@ export default function Header() {
   const [auth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const { handleProfile, handleReset } = useNavigationManager();
+  const { handleProfile, handleReset, handleLogout } = useNavigationManager();
+  const { logout } = useAuth();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -31,11 +31,11 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  const { logout } = useAuth();
-  
   const handleSignOut = async () => {
   try {
     await logout();
+    handleClose(); 
+    handleLogout();
   } catch (error) {
     console.error("Logout failed", error);
   }
@@ -48,11 +48,6 @@ export default function Header() {
         sx={(theme) => ({zIndex: theme.zIndex.drawer + 1,})}
       >
         <Toolbar>
-          <img
-            src={icon}
-            alt="App"
-            style={{ height: 48, cursor: "pointer" }}
-          />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Time Management Portal
           </Typography>
