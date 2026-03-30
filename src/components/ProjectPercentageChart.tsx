@@ -1,3 +1,6 @@
+/*
+Pie chart for breakdown of time spent per project
+*/
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Typography, Paper } from '@mui/material'; 
 import { type TimeLogs, type Project } from '../models/timelogs.types';
@@ -18,7 +21,7 @@ export function ProjectPercentageChart({ logs, projects }: Props) {
   if (data.length === 0) return null;
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 3, height: 400, display: 'flex', flexDirection: 'column' }}>
+    <Paper sx={{ p: 4, borderRadius: 3, height: 450, display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h6" gutterBottom>Workload Distribution (%)</Typography>
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <PieChart>
@@ -49,7 +52,7 @@ export function ProjectPercentageChart({ logs, projects }: Props) {
             }}
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
           />
-          <Legend verticalAlign="bottom" height={36}/>
+          <Legend verticalAlign="bottom" height={90}/>
         </PieChart>
       </ResponsiveContainer>
     </Paper>

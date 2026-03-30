@@ -1,3 +1,6 @@
+/*
+Cards to show total hours worked and average per day
+*/
 import { Grid, Paper, Skeleton, Typography } from "@mui/material";
 import { type TimeLogs } from "../models/timelogs.types";
 

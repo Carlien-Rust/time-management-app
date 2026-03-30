@@ -6,6 +6,8 @@ Implemented in __root.tsx
 On left - ensured by Sidebar.css
 Need hook to fetch project names and ids
 
+Calls NewProjectModal
+
 routes for projects: "/new-project" and `/project/${id}`
 
 Active styling – The currently selected route is visually distinct (e.g., bold text or different background).
@@ -27,7 +29,7 @@ export default function Sidebar() {
   const params = useParams({ strict: false }); // URL params
   const activeProjectId = params.id;
 
-  const { data: projects, isLoading, isError } = useGetProjects(user?.id as string);
+  const { data: projects, isLoading} = useGetProjects(user?.id as string);
 
   if (!user?.id) {
     return (

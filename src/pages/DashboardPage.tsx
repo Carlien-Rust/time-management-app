@@ -2,7 +2,11 @@
 src/components/DashboardPage.jsx
 - Overview of all project highlights
 
+Calls TimeLogTable, KPICards, ProjectPercentageChart, TimeChart
+
 route: '/dashboard'
+
+Hooks: useGetTimeLogsByUserId, useGetProjects
 
 -- Clickup ticket
 Open /dashboard; cards render once (no duplicate requests) and display project + total time
@@ -13,9 +17,9 @@ Empty State: If no projects exist, show illustration and “Add Project” butto
 */
 
 import React, { useState, useMemo } from 'react';
-import { Box, Typography, Paper, Select, MenuItem, FormControl, InputLabel, Button, Alert, Grid } from '@mui/material';
+import { Box, Typography, Paper, Select, MenuItem, FormControl, InputLabel, Button, Alert } from '@mui/material';
 import { useGetProjects } from '../hooks/useGetProjects';
-import { useGetTimeLogsByUserId } from '../hooks/useGetTimeLogsByUserId'; // Assuming this exists
+import { useGetTimeLogsByUserId } from '../hooks/useGetTimeLogsByUserId';
 import { useUserStore } from '../store/user/UserStore';
 import TimeLogTable from '../components/TimeLogTable'; 
 import { KPICards } from '../components/KPICards';

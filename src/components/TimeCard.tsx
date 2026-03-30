@@ -1,4 +1,6 @@
 /*
+Calls TimeLogTable
+Actions: Add new time (NewTimeLogModal)
 Hook: useGetTimeLogsByProjectId();
 */
 import { Container, CardActions, Button, Typography, Alert, Box } from '@mui/material';

@@ -1,4 +1,6 @@
 /*
+Calls EditTimeLogModal
+
 -- Clickup Ticket
 Build <TimeEntryTable> using MRT. Columns: Date, Project chip, Duration (h), Notes, row actions (edit / delete).
 Acceptance Criteria
@@ -68,9 +70,9 @@ export default function TimeLogTable({ logs, projects = [], showProjectChip = fa
                 <TableCell>ID</TableCell>
                 <TableCell>Project ID</TableCell>
                 <TableCell>User ID</TableCell>
-                <TableCell align="right">Date</TableCell>
-                <TableCell align="right">Hours</TableCell>
-                <TableCell align="right">Minutes</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Hours</TableCell>
+                <TableCell>Minutes</TableCell>
                 <TableCell>Notes</TableCell>
                 {showProjectChip && <TableCell sx={{ fontWeight: 'bold' }}>Project</TableCell>}
                 <TableCell align="center">Actions</TableCell>
@@ -92,8 +94,8 @@ export default function TimeLogTable({ logs, projects = [], showProjectChip = fa
                     <TableCell>{row.projectId}</TableCell>
                     <TableCell>{row.userId}</TableCell>
                     <TableCell component="th" scope="row">{row.date}</TableCell>
-                    <TableCell align="right">{row.hours}</TableCell>
-                    <TableCell align="right">{row.minutes}</TableCell>
+                    <TableCell>{row.hours}</TableCell>
+                    <TableCell>{row.minutes}</TableCell>
                     <TableCell>{row.notes}</TableCell>
                     {showProjectChip && (
                       <TableCell>

@@ -4,11 +4,11 @@ src/components/ProjectCard.jsx
 Include project name, project duration (start/end), overview of single project
 Link to "Edit project details" and "Log time entry" modals
 Called by Project Page
+Calls EditProjectModal, TimeLogPage
 
 routes for projects: `/project/${id}/edit-project` and `/project/${id}/add-time`
 Hook: useGetProjects(userId); AND useDeleteProject();
 
-TODO:
 Need to receive project id from Project Page
 Hook for fetching project info based on id
 Render Project card with the project info:

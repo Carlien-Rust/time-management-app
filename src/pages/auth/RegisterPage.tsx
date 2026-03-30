@@ -7,10 +7,10 @@ route: "/register"
 Provide new users a way to register with Email + Password so they can access the app. ✅
 Acceptance Criteria
 User successfully submits the "Create Account" form with Name, Email, Password, Confirm. ✅
-New user account appears in both Firebase Console and backend system.
+New user account appears in both Firebase Console and backend system. ✅
 On success sign in redirect to /dashboard. ✅
-Error handling: Invalid credentials display human-friendly inline errors (e.g. “Password has to be 8 characters long”).
-Route Protection: Attempting to access any protected route while unauthenticated redirects to /login after the auth guard resolves.
+Error handling: Invalid credentials display human-friendly inline errors (e.g. “Password has to be 8 characters long”). ✅
+Route Protection: Attempting to access any protected route while unauthenticated redirects to /login after the auth guard resolves. ✅
 Session Persistence: The user stays logged in after page reload or browser restart. ✅ Included in firebaseConfig "setPersistence"
 */
 
@@ -92,7 +92,6 @@ export default function SignUp() {
               required
               fullWidth
               label="First Name"
-              //autoComplete="given-name"
             />
           </FormControl> 
           <FormControl fullWidth sx={{ mb: 2 }}>            
@@ -103,7 +102,6 @@ export default function SignUp() {
               required
               fullWidth
               label="Last Name"
-              //autoComplete="family-name"
             />
           </FormControl> 
           <FormControl fullWidth sx={{ mb: 2 }}>
@@ -115,7 +113,6 @@ export default function SignUp() {
               fullWidth
               label="Email Address"
               placeholder="your@email.com"
-              //autoComplete="email"
             />
           </FormControl>
           <FormControl fullWidth sx={{ mb: 2 }}>
@@ -128,7 +125,6 @@ export default function SignUp() {
               type={showPassword ? "text" : "password"}
               label="Password"
               placeholder="Enter your password"
-              //autoComplete="current-password"
               slotProps={{
                 input: {
                   endAdornment: (
@@ -152,7 +148,6 @@ export default function SignUp() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             disabled={loading}
-            // onClick={handleClickOverview} 
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </Button>

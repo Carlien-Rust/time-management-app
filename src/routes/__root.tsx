@@ -58,11 +58,11 @@ function RootLayout() {
       <Box
         component="main"
         sx={{
-          flexGrow: 1,
-          p: 4,
-          backgroundColor: 'background.default',
+          p: 3,
+          width: { sm: `calc(100% - 240px)` }, 
+          ml: { sm: `240px` }, 
           minHeight: '100vh',
-          width: { sm: `calc(100% - 240px)` }, // Adjust 240px to your Sidebar width
+          backgroundColor: 'background.default',
         }}
       >
         <Toolbar /> 
