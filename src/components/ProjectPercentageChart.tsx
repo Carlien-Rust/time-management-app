@@ -52,7 +52,18 @@ export function ProjectPercentageChart({ logs, projects }: Props) {
             }}
             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
           />
-          <Legend verticalAlign="bottom" height={90}/>
+          <Legend 
+            verticalAlign="bottom" 
+            align="center"
+            iconType="circle"
+            iconSize={10}
+            wrapperStyle={{
+              paddingTop: '18px',
+              fontSize: '10px',
+              maxHeight: '100px',
+              overflowY: 'auto'
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </Paper>
